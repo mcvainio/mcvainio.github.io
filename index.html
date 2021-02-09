@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+<style>
+//setting the map container to full-screen
+html, body {
+  height: 100%;
+  margin: 0;
+}
+#mapid { height: 100%; width: 100%; }
+</style>
+</head>
+
+
+
+
+
+
+<body>
+//hi map container
+<div id="mapid"></div>
+<script>
+
+//this is where we initialize our map with its starting attributes
+var mymap = L.map('mapid')
+//setting the start view to Whitehorse cause idk, gotta start somewhere
+mymap.setView([60.7212, -135.0568], 5);
+//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+
+
+//now we're putting in the basemap background tiles. default is __ but we'll introduce a toggle later for other basemap bckgds
+	L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+		maxZoom: 18,
+		attribution: 'Imagery reproduced from the GEBCO_2020 Grid, GEBCO Compilation Group (2020) GEBCO 2020 Grid (doi:10.5285/a29c5465-b138-234d-e053-6c86abc040b9)',
+		tileSize: 512,
+		zoomOffset: -1
+	}).addTo(mymap);
+
+
+//haven't figured this out yet... this is supposed to overlay navionics bathy cause i like their contours better
+    var overlay = new JNC.Leaflet.NavionicsOverlay({
+      navKey: 'NavKey',
+      chartType: JNC.NAVIONICS_CHARTS.NAUTICAL,
+      isTransparent: true,
+    });
+    overlay.addTo(mmap);
+
+
+</script>
+
+</body>
+</html>
