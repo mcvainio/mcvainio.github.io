@@ -33,6 +33,9 @@ mymap.setView([60.7212, -135.0568], 5);
 
 //toggle basemap layers
 var basemaps = {
+    Topography: L.tileLayer.wms(' https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?', {
+        layers: 'GEBCO_Latest'
+    }),
 
     'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
     }),
