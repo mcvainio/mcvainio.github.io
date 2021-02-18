@@ -37,14 +37,14 @@ var basemaps = {
         layers: 'GEBCO_Latest'
     }),
 
-    OceanBasemap: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
-    }),
-
-    'Basemap2': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+    Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
         layers: 'OSM-Overlay-WMS'
     }),
 
-    'Basemap3': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+    'Topography, then places': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+    }),
+
+    'Places, then topography': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
         layers: 'OSM-Overlay-WMS,TOPO-WMS'
     })
 };
@@ -52,6 +52,7 @@ var basemaps = {
 L.control.layers(basemaps).addTo(mymap);
 
 basemaps.Topography.addTo(mymap);
+
 
 
 
