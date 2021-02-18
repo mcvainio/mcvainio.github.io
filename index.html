@@ -34,21 +34,21 @@ mymap.setView([60.7212, -135.0568], 5);
 //toggle basemap layers
 var basemaps = {
 
-    'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+    'OceanBasemap': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
     }),
 
-    'Basemap 2': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+    'Basemap2': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
         layers: 'OSM-Overlay-WMS'
     }),
 
-    'Basemap 3': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+    'Basemap3': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
         layers: 'OSM-Overlay-WMS,TOPO-WMS'
     })
 };
 
 L.control.layers(basemaps).addTo(mymap);
 
-basemaps.Ocean Basemap (ESRI).addTo(mymap);
+basemaps.OceanBasemap.addTo(mymap);
 
 
 
