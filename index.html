@@ -1,16 +1,44 @@
 <html>
 
 <head>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<!-- Leaflet -->
+ 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 
+		<!-- Turf.js -->
+		<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+
+		<!-- Chart.js -->
+		<script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
+
+		<!-- Proj4js - required BEFORE dataset import -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+
+		<!-- rasterjs dataset - must be AFTER Proj4js import -->
+		<script src="./kampala.js"></script>
+    
+    
 <style>
-//setting the map container to full-screen
-html, body {
-  height: 100%;
-  margin: 0;
-}
-#mapid { height: 100%; width: 100%; }
+			/* style the map container*/
+			#map {
+				width: 400px;
+				height: 500px;
+				float: left;
+			}
+			/* style the chart container */
+			#canvas-holder {
+				width: 400px;
+				float: right;
+			}
+			/* style the container */
+			#container {
+				width: 800px;
+			}
+			/* style the green ration report text */
+			#green-ratio {
+				font-family: sans-serif;
+				text-align: center;
+			}
 </style>
 </head>
 
@@ -20,54 +48,164 @@ html, body {
 
 
 <body>
+	<body onload="initMap();">
 
-//testing uploader tool
-<form enctype="multipart/form-data" action="uploader.php" method="POST">
-<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
-Choose a file to upload: <input name="uploadedfile" type="file" /><br />
-<input type="submit" value="Upload File" />
-</form>
-    
-<div id="mapid"></div>
+		<!-- container to control the layout -->
+		<div id="container">
+
+			<!-- the map -->
+			<div id='map'></div>
+
+			<!-- container for the pie chart -->
+			<div id="canvas-holder">
+
+				<!-- chart -->
+				<canvas id="chart"></canvas>
+
+				<!-- report text -->
+				<div id='green-ratio'>
+					<p>Click the map to calculate Green Ratio</p>
+				</div>
+			</div>
+		</div>
+
+        
 <script>
+      // global variable for map
+      let map, ndviLayer, circleLyr;
 
-//this is where we initialize our map with its starting attributes
-var mymap = L.map('mapid')
-//setting the start view to Whitehorse cause idk, gotta start somewhere
-mymap.setView([60.7212, -135.0568], 5);
-//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+      /**
+       * Initialise the map
+       */
+      function initMap() {
+
+        // initialise the map
+        map = L.map('map').setView([60.7212, -135.0568], 5);
+          //last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+
+        // add some satellite imagery tiles
+				L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+					attribution: 'Copyright info for basemap goes here'
+				}).addTo(map);
+
+				// pre-calculate the entire ndvi layer to save computation in click listener
+				calculateNdviLayer();
+
+				// initialise chart data
+				let chartConfig = {
+			    type: 'pie',
+			    data: {
+						datasets:[{
+			        data: [],	// initialise with empty array as no data yet
+							backgroundColor: ["#999999", "#27b827"],
+				    }],
+						labels: ['Not Green', 'Green'],
+					},
+				};
+
+				// initialise the chart
+				const ctx = document.getElementById('chart').getContext('2d');
+				let pieChart = new Chart(ctx, chartConfig);
+
+				// set a click listener to report NDVI witihn 500m of a click
+				map.on('click', function(e) {
+
+					// calculate the green ratio
+					const greenRatio = parseFloat((calculateGreenRatio([e.latlng.lng, e.latlng.lat])* 100).toFixed(2));
+
+					// update the chart to reflect the ratio
+					chartConfig.data.datasets[0].data = [100 - greenRatio, greenRatio];
+					pieChart.update();
+
+					//output ratio to console
+					document.getElementById('green-ratio').innerHTML = "<p>" + greenRatio + "% Green Space</p>";
+				});
+			}
 
 
+			/**
+			 * Calculate the green ratio within 500m of a location
+			 */
+			function calculateGreenRatio(lngLat){
 
-//toggle basemap layers
-var basemaps = {
-    Topography: L.tileLayer.wms(' https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?', {
-        layers: 'GEBCO_Latest'
-    }),
+				// get a polygon representing a 500m radius around the clicked location
+				const circle = turf.circle(turf.point(lngLat), 0.5, {
+					units: 'kilometers',
+					steps: 64,
+				});
 
-    Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
-        layers: 'OSM-Overlay-WMS'
-    }),
+				// remove previous circle layer and add a new one
+				if (circleLyr) map.removeLayer(circleLyr);
+				circleLyr = L.geoJson(circle, {
+					style: {
+						color: 'yellow',
+						weight: 0.5,
+						opacity: 0.6,
+						fillColor: '#ff7800',
+						fillOpacity: 0.3,
+					}
+				}).addTo(map);
 
-    'Topography, then places': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
-    }),
+				// get bounds of the circle and extract the corners in image space
+				const bl = kampala.geo2image([circleLyr.getBounds().getWest(), circleLyr.getBounds().getSouth()]);
+				const tr = kampala.geo2image([circleLyr.getBounds().getEast(), circleLyr.getBounds().getNorth()]);
 
-    'Places, then topography': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
-        layers: 'OSM-Overlay-WMS,TOPO-WMS'
-    })
-};
+				//loop through all cells in dataset within the bounds
+				let points = [];
+				for (let x = bl[0]; x <= tr[0]; x++) {
+					for (let y = tr[1]; y <= bl[1]; y++){
 
-L.control.layers(basemaps).addTo(mymap);
+						// add point with property for ndvi value
+						points.push(turf.point(kampala.image2geo([x, y]),{ ndvi: ndviLayer[x][y] }));
+					}
+				}
 
-basemaps.Topography.addTo(mymap);
+				// get the coordinates from the array that are in the aoi
+				const pointsWithin = turf.pointsWithinPolygon(turf.featureCollection(points), circle);
+
+				// count the number of green cells (NDVI above 0.5 threshold)
+				let green = 0;
+				for (let p = 0; p < pointsWithin.features.length; p++) {
+					if (pointsWithin.features[p].properties.ndvi >= 0.5) {
+						green++;
+					}
+				}
+
+				// calculate green ratio and return
+				return green / pointsWithin.features.length;
+			}
 
 
+			/**
+			 * Calculate NDVI for entire dataset
+			 */
+			function calculateNdviLayer(){
 
-//example marker w popup
-var examplemark = L.marker([60.7212, -135.0568]).addTo(mymap);
-examplemark.bindPopup("<b>Popup</b><br>I am an example popup").openPop
+				// initialise global array for ndvi results
+				ndviLayer = [];
+
+				// loop through every single column
+				for(let x = 0; x < kampala.width; x++){
+
+					// add a new column
+					ndviLayer.push([]);
+
+					// loop through every single pixel in the column
+					for(let y = 0; y < kampala.height; y++){
+
+						// calculate ndvi for each pixel
+						ndviLayer[x][y] = ndvi(kampala.band3[x][y], kampala.band4[x][y]);
+					}
+				}
+			}
 
 
+			/**
+			 * Normalised Difference Vegetation Index calculation
+			 */
+			function ndvi(red, nir){
+				return (nir - red) / (nir + red);
+			}
 
 
 </script>
