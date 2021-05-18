@@ -1,6 +1,8 @@
 <html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Raster JS Demo</title>
 
-<head>
 		<!-- Leaflet -->
  		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
@@ -15,10 +17,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
 		<!-- rasterjs dataset - must be AFTER Proj4js import -->
-		<script src="https://raw.githubusercontent.com/jonnyhuck/raster-js/0bad6554ff450880ecfb6b675ac4a1f50aa9029c/kampala.js"></script>
-    
-    
-<style>
+		<script src="./kampala.js"></script>
+
+		<style>
 			/* style the map container*/
 			#map {
 				width: 400px;
@@ -39,15 +40,8 @@
 				font-family: sans-serif;
 				text-align: center;
 			}
-</style>
-</head>
-
-
-
-
-
-
-<body>
+		</style>
+	</head>
 	<body onload="initMap();">
 
 		<!-- container to control the layout -->
@@ -69,8 +63,8 @@
 			</div>
 		</div>
 
-        
-<script>
+		<script>
+
       // global variable for map
       let map, ndviLayer, circleLyr;
 
@@ -80,12 +74,11 @@
       function initMap() {
 
         // initialise the map
-        map = L.map('map').setView([60.7212, -135.0568], 5);
-          //last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+        map = L.map('map').setView([0.348384, 32.568841], 14);
 
         // add some satellite imagery tiles
 				L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-					attribution: 'Copyright info for basemap goes here'
+					attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 				}).addTo(map);
 
 				// pre-calculate the entire ndvi layer to save computation in click listener
@@ -206,9 +199,6 @@
 			function ndvi(red, nir){
 				return (nir - red) / (nir + red);
 			}
-
-
-</script>
-
-</body>
+		</script>
+	</body>
 </html>
