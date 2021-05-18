@@ -17,7 +17,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
 		<!-- rasterjs dataset - must be AFTER Proj4js import -->
-		<script src="https://raw.githubusercontent.com/jonnyhuck/raster-js/master/kampala.js"></script>
+		<script src="./kampala.js"></script>
 
 		<style>
 			/* style the map container*/
@@ -100,18 +100,18 @@
 				const ctx = document.getElementById('chart').getContext('2d');
 				let pieChart = new Chart(ctx, chartConfig);
 
-				// set a click listener to report NDVI witihn 500m of a click
+				// set a click listener to update pie chart on click
 				map.on('click', function(e) {
 
-					// calculate the green ratio
-					const greenRatio = parseFloat((calculateGreenRatio([e.latlng.lng, e.latlng.lat])* 100).toFixed(2));
+					// calculate the "problem area" ratio
+					const problemRatio = (numofprobs)* 100).toFixed(2);
 
 					// update the chart to reflect the ratio
-					chartConfig.data.datasets[0].data = [100 - greenRatio, greenRatio];
+					chartConfig.data.datasets[0].data = [100 - problemRatio, problemRatio];
 					pieChart.update();
 
 					//output ratio to console
-					document.getElementById('green-ratio').innerHTML = "<p>" + greenRatio + "% Green Space</p>";
+					document.getElementById('green-ratio').innerHTML = "<p>" + problemRatio + "% Green Space</p>";
 				});
 			}
 
@@ -199,6 +199,32 @@
 			function ndvi(red, nir){
 				return (nir - red) / (nir + red);
 			}
+function numofprobs(a,n)
+{
+    let num = 0;
+    for (let i = 0; i < n; i++)
+	if parseFloat(a[i]) > 600
+        num += 1;
+ 
+    return num;
+}
+
+function findMean(a,n)
+{
+    let sum = 0;
+    for (let i = 0; i < n; i++)
+        sum += parseFloat(a[i]);
+ 
+    return sum / n;
+}
+
+
+let a = kampala.band3
+let n = a.length
+
+document.write("Mean = " + findMean(a,n) + "<br>")
+document.write("Mode = " + "Make this f(x) later");
 		</script>
+
 	</body>
 </html>
