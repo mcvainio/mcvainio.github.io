@@ -3,6 +3,23 @@
 <head>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<!-- Leflet Geotiff Reader -->
+		    <script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/leaflet-geotiff.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/vendor/plotty.js"></script>
+
+		<!-- Leflet Sidebar -->
+    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+    <script src="js/leaflet-sidebar.js"></script>
+
+		<!-- Proj4js - required BEFORE dataset import -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+
+		<!-- ESRI leaflet -->
+ <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+	
 
 <style>
 //setting the map container to full-screen
@@ -20,55 +37,18 @@ html, body {
 
 
 <body>
-
-//testing uploader tool
-<form enctype="multipart/form-data" action="uploader.php" method="POST">
-<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
-Choose a file to upload: <input name="uploadedfile" type="file" /><br />
-<input type="submit" value="Upload File" />
-</form>
-    
 <div id="mapid"></div>
+
 <script>
 
-//this is where we initialize our map with its starting attributes
-var mymap = L.map('mapid')
-//setting the start view to Whitehorse cause idk, gotta start somewhere
-mymap.setView([60.7212, -135.0568], 5);
-//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+var mymap = L.map('mapid');
+mymap.setView([70, -133], 7);
 
-
-
-//toggle basemap layers
-var basemaps = {
-    Topography: L.tileLayer.wms(' https://www.gebco.net/data_and_products/gebco_web_services/2019/mapserv?', {
-        layers: 'GEBCO_Latest'
-    }),
-
-    Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
-        layers: 'OSM-Overlay-WMS'
-    }),
-
-    'Topography, then places': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
-    }),
-
-    'Places, then topography': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
-        layers: 'OSM-Overlay-WMS,TOPO-WMS'
-    })
-};
-
-L.control.layers(basemaps).addTo(mymap);
-
-basemaps.Topography.addTo(mymap);
-
-
-
-//example marker w popup
-var examplemark = L.marker([60.7212, -135.0568]).addTo(mymap);
-examplemark.bindPopup("<b>Popup</b><br>I am an example popup").openPop
-
-
-
+L.esri.basemapLayer("Gray").addTo(mymap);
+L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+      attribution: 'heyhey'
+    }).addTo(mymap);
 
 </script>
 
