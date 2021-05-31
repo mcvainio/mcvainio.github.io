@@ -1,0 +1,153 @@
+//upload amundsen tiles to school computer to test the folder format for local display (line 130)
+<html>
+
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<!-- Leflet Geotiff Reader -->
+		    <script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/leaflet-geotiff.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/vendor/plotty.js"></script>
+
+		<!-- Leflet Sidebar -->
+    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+    <script src="js/leaflet-sidebar.js"></script>
+
+		<!-- Proj4js - required BEFORE dataset import -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+
+		<!-- ESRI leaflet -->
+ <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+	
+
+<style>
+//setting the map container to full-screen
+html, body {
+  height: 100%;
+  margin: 0;
+}
+#mapid { height: 100%; width: 100%; }
+</style>
+</head>
+
+
+
+
+
+
+<body>
+    <script src="js/leaflet-sidebar.js"></script>
+
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    sidebar-v2
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>Example text </p>            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="mapid" class="sidebar-map"></div>
+
+<script>
+
+//this is where we initialize our map with its starting attributes
+var mymap = L.map('mapid')
+//setting the start view to Whitehorse cause idk, gotta start somewhere
+mymap.setView([70, -133], 7);
+//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+
+//toggle basemap layers
+var basemaps = {
+    GEBCO: L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?', {
+        layers: 'GEBCO_Latest'
+    }),
+
+    'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+    }),
+};
+
+
+var overlaymaps = {
+    'NONNA-100': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 100 Tiles',
+	format: 'image/png',
+	transparent: true
+    }),
+
+    'NONNA-10': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 10 Tiles',
+	format: 'image/png',
+	transparent: true,
+    }),
+
+    'IHO Combined Mosaic': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }),
+
+};
+
+L.control.layers(basemaps, overlaymaps).addTo(mymap);
+basemaps.GEBCO.addTo(mymap);
+
+
+var sidebar = L.control.sidebar('sidebar').addTo(mymap);
+
+//add overlay of unb tiles
+L.tileLayer('/tile/{z}/{y}/{x}', {
+    }).addTo(mymap);
+
+
+
+
+//add uploaded geotiff layer over top
+const url = "/nonna.tif";
+const options= {
+		band: 1,
+		renderer: renderer,
+};
+const renderer = L.LeafletGeotiff.plotty(opt);
+const opt = {
+	colorScale: "bone",
+};
+
+var layer = L.leafletGeotiff(url, options).addTo(mymap);
+
+
+</script>
+
+</body>
+</html>
