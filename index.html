@@ -1,231 +1,147 @@
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Raster JS Demo</title>
 
-		<!-- Leaflet -->
- 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		<!-- Leflet Geotiff Reader -->
+		    <script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/leaflet-geotiff.js"></script>
+		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/vendor/plotty.js"></script>
 
-		<!-- Turf.js -->
-		<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
-
-		<!-- Chart.js -->
-		<script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
+		<!-- Leflet Sidebar -->
+    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+    <script src="js/leaflet-sidebar.js"></script>
 
 		<!-- Proj4js - required BEFORE dataset import -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
-		<!-- rasterjs dataset - must be AFTER Proj4js import -->
-		<script src="./kampala.js"></script>
+		<!-- ESRI leaflet -->
+ <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
 
-		<style>
-			/* style the map container*/
-			#map {
-				width: 400px;
-				height: 500px;
-				float: left;
-			}
-			/* style the chart container */
-			#canvas-holder {
-				width: 400px;
-				float: right;
-			}
-			/* style the container */
-			#container {
-				width: 800px;
-			}
-			/* style the green ration report text */
-			#green-ratio {
-				font-family: sans-serif;
-				text-align: center;
-			}
-		</style>
-	</head>
-	<body onload="initMap();">
+	
 
-		<!-- container to control the layout -->
-		<div id="container">
-
-			<!-- the map -->
-			<div id='map'></div>
-
-			<!-- container for the pie chart -->
-			<div id="canvas-holder">
-
-				<!-- chart -->
-				<canvas id="chart"></canvas>
-
-				<!-- report text -->
-				<div id='green-ratio'>
-					<p>Click the map to calculate Green Ratio</p>
-				</div>
-			</div>
-		</div>
-
-		<script>
-
-      // global variable for map
-      let map, ndviLayer, circleLyr;
-
-      /**
-       * Initialise the map
-       */
-      function initMap() {
-
-        // initialise the map
-        map = L.map('map').setView([0.348384, 32.568841], 14);
-
-        // add some satellite imagery tiles
-				L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-					attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-				}).addTo(map);
-
-				// pre-calculate the entire ndvi layer to save computation in click listener
-				calculateNdviLayer();
-
-				// initialise chart data
-				let chartConfig = {
-			    type: 'pie',
-			    data: {
-						datasets:[{
-			        data: [],	// initialise with empty array as no data yet
-							backgroundColor: ["#999999", "#27b827"],
-				    }],
-						labels: ['Not Green', 'Green'],
-					},
-				};
-
-				// initialise the chart
-				const ctx = document.getElementById('chart').getContext('2d');
-				let pieChart = new Chart(ctx, chartConfig);
-
-				// set a click listener to update pie chart on click
-				map.on('click', function(e) {
-
-					// calculate the "problem area" ratio
-					const problemRatio = (numofprobs)* 100).toFixed(2);
-
-					// update the chart to reflect the ratio
-					chartConfig.data.datasets[0].data = [100 - problemRatio, problemRatio];
-					pieChart.update();
-
-					//output ratio to console
-					document.getElementById('green-ratio').innerHTML = "<p>" + problemRatio + "% Green Space</p>";
-				});
-			}
-
-
-			/**
-			 * Calculate the green ratio within 500m of a location
-			 */
-			function calculateGreenRatio(lngLat){
-
-				// get a polygon representing a 500m radius around the clicked location
-				const circle = turf.circle(turf.point(lngLat), 0.5, {
-					units: 'kilometers',
-					steps: 64,
-				});
-
-				// remove previous circle layer and add a new one
-				if (circleLyr) map.removeLayer(circleLyr);
-				circleLyr = L.geoJson(circle, {
-					style: {
-						color: 'yellow',
-						weight: 0.5,
-						opacity: 0.6,
-						fillColor: '#ff7800',
-						fillOpacity: 0.3,
-					}
-				}).addTo(map);
-
-				// get bounds of the circle and extract the corners in image space
-				const bl = kampala.geo2image([circleLyr.getBounds().getWest(), circleLyr.getBounds().getSouth()]);
-				const tr = kampala.geo2image([circleLyr.getBounds().getEast(), circleLyr.getBounds().getNorth()]);
-
-				//loop through all cells in dataset within the bounds
-				let points = [];
-				for (let x = bl[0]; x <= tr[0]; x++) {
-					for (let y = tr[1]; y <= bl[1]; y++){
-
-						// add point with property for ndvi value
-						points.push(turf.point(kampala.image2geo([x, y]),{ ndvi: ndviLayer[x][y] }));
-					}
-				}
-
-				// get the coordinates from the array that are in the aoi
-				const pointsWithin = turf.pointsWithinPolygon(turf.featureCollection(points), circle);
-
-				// count the number of green cells (NDVI above 0.5 threshold)
-				let green = 0;
-				for (let p = 0; p < pointsWithin.features.length; p++) {
-					if (pointsWithin.features[p].properties.ndvi >= 0.5) {
-						green++;
-					}
-				}
-
-				// calculate green ratio and return
-				return green / pointsWithin.features.length;
-			}
-
-
-			/**
-			 * Calculate NDVI for entire dataset
-			 */
-			function calculateNdviLayer(){
-
-				// initialise global array for ndvi results
-				ndviLayer = [];
-
-				// loop through every single column
-				for(let x = 0; x < kampala.width; x++){
-
-					// add a new column
-					ndviLayer.push([]);
-
-					// loop through every single pixel in the column
-					for(let y = 0; y < kampala.height; y++){
-
-						// calculate ndvi for each pixel
-						ndviLayer[x][y] = ndvi(kampala.band3[x][y], kampala.band4[x][y]);
-					}
-				}
-			}
-
-
-			/**
-			 * Normalised Difference Vegetation Index calculation
-			 */
-			function ndvi(red, nir){
-				return (nir - red) / (nir + red);
-			}
-function numofprobs(a,n)
-{
-    let num = 0;
-    for (let i = 0; i < n; i++)
-	if parseFloat(a[i]) > 600
-        num += 1;
- 
-    return num;
+<style>
+//setting the map container to full-screen
+html, body {
+  height: 100%;
+  margin: 0;
 }
-
-function findMean(a,n)
-{
-    let sum = 0;
-    for (let i = 0; i < n; i++)
-        sum += parseFloat(a[i]);
- 
-    return sum / n;
-}
+#mapid { height: 100%; width: 100%; }
+</style>
+</head>
 
 
-let a = kampala.band3
-let n = a.length
 
-document.write("Mean = " + findMean(a,n) + "<br>")
-document.write("Mode = " + "Make this f(x) later");
-		</script>
 
-	</body>
+
+
+<body>
+    <script src="js/leaflet-sidebar.js"></script>
+
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    sidebar-v2
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>Example text </p>            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="mapid" class="sidebar-map"></div>
+
+<script>
+
+//this is where we initialize our map with its starting attributes
+var mymap = L.map('mapid')
+//setting the start view to Whitehorse cause idk, gotta start somewhere
+mymap.setView([70, -133], 7);
+//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+
+//toggle basemap layers
+var basemaps = {
+    GEBCO: L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?', {
+        layers: 'GEBCO_Latest'
+    }),
+
+    'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+    }),
+};
+
+
+var overlaymaps = {
+    'NONNA-100': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 100 Tiles',
+	format: 'image/png',
+	transparent: true
+    }),
+
+    'NONNA-10': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 10 Tiles',
+	format: 'image/png',
+	transparent: true,
+    }),
+
+    'IHO Combined Mosaic': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }),
+
+};
+
+L.control.layers(basemaps, overlaymaps).addTo(mymap);
+basemaps.GEBCO.addTo(mymap);
+
+
+var sidebar = L.control.sidebar('sidebar').addTo(mymap);
+
+
+
+//add uploaded geotiff layer over top
+const url = "/nonna.tif";
+const options= {
+		band: 1,
+		renderer: renderer,
+};
+const renderer = L.LeafletGeotiff.plotty(opt);
+const opt = {
+	colorScale: "bone",
+};
+
+var layer = L.leafletGeotiff(url, options).addTo(mymap);
+
+
+</script>
+
+</body>
 </html>
- 
