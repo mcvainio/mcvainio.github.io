@@ -1,57 +1,35 @@
 <html>
-
 <head>
+		<!-- leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-		<!-- Leflet Geotiff Reader -->
-		    <script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
-		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/leaflet-geotiff.js"></script>
-		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/vendor/plotty.js"></script>
 
-		<!-- Leflet Sidebar -->
-    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
-    <script src="js/leaflet-sidebar.js"></script>
-
-		<!-- ESRI leaflet -->
- <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
-    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
-    crossorigin=""></script>
-
-		<!-- Proj4js - required BEFORE dataset import -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
-		<!-- rasterjs dataset - must be AFTER Proj4js import -->
-		<script src="./kampala.js"></script>
-
-
-		<!-- ESRI leaflet -->
+		<!-- ESRI plugin -->
  <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
     integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
     crossorigin=""></script>
 	
 
-  <style>
-    body { margin:0; padding:0; }
-    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-  </style>
+<style>
+body { margin:0; padding:0; }
+	#map { position: absolute; top:0; bottom:0; right:0; left:0; }
+
+	#pixelValue {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 1000;
+		background: white;
+	    	padding: 1em;
+		}
+</style>
 </head>
 <body>
-
-<style>
-  #pixelValue {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-    background: white;
-    padding: 1em;
-  }
-</style>
 
 <div id="map"></div>
 <div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
 
 <script>
-
   var renderingRule = {
     rasterFunction: 'Hillshade',
     rasterFunctionArguments: {
@@ -62,9 +40,7 @@
     variableName: 'DEM'
   };
 
-  // sample server in this example is not CORS enabled, so use JSONP
   L.esri.get = L.esri.get.JSONP;
-
   var map = L.map('map').setView([72, -130], 10);
 
   var hillshade = L.esri.imageMapLayer({
