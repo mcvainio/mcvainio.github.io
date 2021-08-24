@@ -1,28 +1,12 @@
 <html>
-	<head>
+<head>
 		<meta charset="UTF-8">
 		<title>Bathymetry Analytic Tool</title>
 
-		<!-- Leaflet -->
+		<!-- Leaflet w plugins -->
  		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+		<script src="Leaflet-butbetter.js"></script>
 
-		<!-- Turf.js -->
-		<script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
-
-		<!-- Chart.js -->
-		<script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
-
-		<!-- ESRI plugin -->
- <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
-    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
-    crossorigin=""></script>
-
-		<!-- Leflet Geotiff Reader -->
-    		<script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
-
-		<!-- Proj4js - required BEFORE dataset import -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
 
 		<style>
@@ -54,9 +38,12 @@
 				text-align: center;
 			}
 			#meanetc {
-				position: relative;
-				top: 20%;
-				right: 10%;
+				position: absolute;
+				top: 5%;
+				right: 1%;
+				width: 1%
+				overflow-x: auto;
+				overflow-y: scroll;
 				border: 1px solid black;
 				border-radius: 5px;
 			}
@@ -116,11 +103,11 @@ body {
 
 }
 
-		</style>
-	</head>
+</style>
+</head>
 
 
-
+//html body
 <body>
 <p style="color:white"><b>BATHYMETRY ANALYTICS</b></p>
 		<!-- container to control the layout -->
@@ -145,15 +132,17 @@ body {
 				<canvas id="barChart2"></canvas></div>
 			</div>
 		</div>
+
+
+
 <script>
+L.esri.get = L.esri.get.JSONP;
 
 //initialize our map with its starting attributes
 //setting the start view
-L.esri.get = L.esri.get.JSONP;
-let circleLyr;
-
 var map = L.map('mapid').setView([71, -135], 7.5);
 //last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
+
 //layer to identify
   var renderingRule = {
     rasterFunctionArguments: {
@@ -169,7 +158,7 @@ var map = L.map('mapid').setView([71, -135], 7.5);
     useCors: false
   }).addTo(map);
 
-//toggle basemap layers
+//define basemap layers
 var basemaps = {
     GEBCO: L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?', {
         layers: 'GEBCO_Latest'
@@ -182,25 +171,30 @@ var basemaps = {
     }),
 
 };
-
+//toggle basemap layers
 L.control.layers(basemaps).addTo(map);
 basemaps.GEBCO.addTo(map);
 
+//define a bunch of variables for click listener later so they can be called on globally
+var circleLyr;
+var identifiedPixel;
+var yup;
+var lessthanhundo;
+var btwn1;
+var btwn2;
+var btwn3;
+var btwn4;
+var grtr;
+var num;
+var meanPixel;
+var woop;
+var points;
 
-  var identifiedPixel;
-  var yup;
-  var lessthanhundo;
-  var btwn1;
-  var btwn2;
-  var btwn3;
-  var btwn4;
-  var grtr;
-  var num;
-  var meanPixel;
-  var woop;
-
+//for some reason the circle tool won't work unless there's already one drawn before the click
 drawcircle([-135,71]);
 
+
+//now comes a bunch of functions
 function drawcircle(lngLat){
 				const circle = turf.circle(turf.point(lngLat), 5, {
 					units: 'kilometers',
@@ -216,18 +210,76 @@ function drawcircle(lngLat){
 						fillColor: '#ff7800',
 						fillOpacity: 0.3,
 					}
-				}).addTo(map);
-bl = ([circleLyr.getBounds().getWest(), circleLyr.getBounds().getSouth()]);
-tr = ([circleLyr.getBounds().getEast(), circleLyr.getBounds().getNorth()]);
+				});
+circleLyr.addTo(map);
+getmean(circleLyr);
+};
+
+function getmean(circ){
+var points = [];
+for (let x = circ.getBounds().getWest(); x <= circ.getBounds().getEast(); x += 0.02) {
+	for (let y = circ.getBounds().getSouth(); y <= circ.getBounds().getNorth(); y += 0.02){
+		hillshade.identify().at([y,x]).run(function (error, meanPixel) {
+			if (error) {
+			return;
+			}
+		var woop = meanPixel.pixel;
+		var test = Number(woop.properties.value);
+		if(isNaN(test)) {
+		return;
+		} else {
+		points.push(test);
+		}
+    var sum = 0;
+    var lessthan = 0;
+    var btwnfirst = 0;
+    var btwnscnd = 0;
+    var btwnthrd = 0;
+    var btwnfrth = 0;
+    var grter = 0;
+    var m = points.length;
+    for (let i = 0; i < m; i++) {
+        sum += parseFloat(points[i]);
+	if (points[i] > -100) {
+        	lessthan += 1;
+		}
+	else if (-250 < points[i] && points[i] <= -100) {
+        	btwnfirst += 1;
+		}
+	else if (-500 < points[i] && points[i] <= -250) {
+        	btwnscnd += 1;
+		}
+	else if (-750 < points[i] && points[i] <= -500) {
+        	btwnthrd += 1;
+		}
+	else if (-1000 < points[i] && points[i] <= -750) {
+        	btwnfrth += 1;
+		}
+	else if (points[i] <= -1000) {
+        	grter += 1;
+		}
+    num = m;
+	}
+ //the e2 and e-2 specify the number of decimals to return
+    yup = Number(Math.round(sum / m+'e2')+'e-2');
+    lessthanhundo = Number(Math.round((lessthan / m)*100+'e2')+'e-2');
+    btwn1 = Number(Math.round((btwnfirst / m)*100+'e2')+'e-2');
+    btwn2 = Number(Math.round((btwnscnd / m)*100+'e2')+'e-2');
+    btwn3 = Number(Math.round((btwnthrd / m)*100+'e2')+'e-2');
+    btwn4 = Number(Math.round((btwnfrth / m)*100+'e2')+'e-2');
+    grtr = Number(Math.round((grter / m)*100+'e2')+'e-2');
+	point = points;
+		});
+	}
+}    
+
 };
 
 
+//write something to the 'meanetc' div beside the venn diagram to start out
+document.getElementById('meanetc').innerHTML ="Total Pings =" + "1766" + "<br>Mean = " + "NaN" + "m <br>" ;
 
-getMean(bl,tr);
-//write results of the above to the 'meanetc' div beside the venn diagram
-document.getElementById('meanetc').innerHTML ="Total Pings =" + "1766" + "<br>Mean = " + yup + "m <br>Values above 600m = " + lessthanhundo + "% <br>" ;
-
-
+//initialize pie chart
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'pie',
@@ -258,6 +310,7 @@ var myChart = new Chart(ctx, {
 });
 
 
+//initialize histogram
 let chartConfig = {
     type: 'bar',
     data: {
@@ -304,6 +357,7 @@ let chartConfig = {
 var vtx = document.getElementById('barChart').getContext('2d');
 var barChart = new Chart(vtx, chartConfig); 
 
+//initialize %diff histogram
 var ctx = document.getElementById('barChart2').getContext('2d');
 var barChart2 = new Chart(ctx, {
     type: 'line',
@@ -364,84 +418,32 @@ var barChart2 = new Chart(ctx, {
 
 
 
-function getMean(bl,tr){
-let points = [];
-for (let x = bl[0]; x <= tr[0]; x += 0.02) {
-	for (let y = bl[1]; y <= tr[1]; y += 0.02){
-		hillshade.identify().at([y,x]).run(function (error, meanPixel) {
-			if (error) {
-			return;
-			}
-		woop = meanPixel.pixel;
-		points.push(woop.properties.value);
-    let sum = 0;
-    let lessthan = 0;
-    let btwnfirst = 0;
-    let btwnscnd = 0;
-    let btwnthrd = 0;
-    let btwnfrth = 0;
-    let grterthan = 0;
-    let m = points.length;
-    for (let i = 0; i < m; i++) {
-        sum += parseFloat(points[i]);
-	if (points[i] > -100) {
-        	lessthan += 1;
-		}
-	else if (-250 < points[i] && points[i] <= -100) {
-        	btwnfirst += 1;
-		}
-	else if (-500 < points[i] && points[i] <= -250) {
-        	btwnscnd += 1;
-		}
-	else if (-750 < points[i] && points[i] <= -500) {
-        	btwnthrd += 1;
-		}
-	else if (-1000 < points[i] && points[i] <= -750) {
-        	btwnfrth += 1;
-		}
-	else if (points[i] <= -1000) {
-        	grtrthan += 1;
-		}
-    num = m;
-
-	}
- //the e2 and e-2 specify the number of decimals to return
-    yup = Number(Math.round(sum / m+'e2')+'e-2');
-    lessthanhundo = Number(Math.round((lessthan / m)*100+'e2')+'e-2');
-    btwn1 = Number(Math.round((btwnfirst / m)*100+'e2')+'e-2');
-    btwn2 = Number(Math.round((btwnscnd / m)*100+'e2')+'e-2');
-    btwn3 = Number(Math.round((btwnthrd / m)*100+'e2')+'e-2');
-    btwn4 = Number(Math.round((btwnfrth / m)*100+'e2')+'e-2');
-    grtr = Number(Math.round((grtrthan / m)*100+'e2')+'e-2');
-		});
-	}
-}    
-};
-
-
 //click listener
-  map.on('click', function (e) {
+//draws new circle on click, erases old one, recalculates stats & refreshes graphs
+document.addEventListener('DOMContentLoaded', function(event) {
+  map.addEventListener('click', function (e) {
+	map.removeLayer(circleLyr);
+	var center = [e.latlng.lng, e.latlng.lat];
+	drawcircle(center);
+	var centerround = [Number(Math.round((e.latlng.lng)+'e2')+'e-2'), Number(Math.round((e.latlng.lat)+'e2')+'e-2')];	
     if (identifiedPixel) {
       meanetc.innerHTML = 'Loading';
     }
+
     hillshade.identify().at(e.latlng).run(function (error, results) {
       if (error) {
         return;
       }
-
 	identifiedPixel = results.pixel;
-	var center = [e.latlng.lng, e.latlng.lat];
-	var centerround = [Number(Math.round((e.latlng.lng)+'e2')+'e-2'), Number(Math.round((e.latlng.lat)+'e2')+'e-2')];	
-	map.removeLayer(circleLyr);
-	drawcircle(center);
-	getMean(bl,tr);
 	chartConfig.data.datasets[0].data = [lessthanhundo, btwn1, btwn2, btwn3, btwn4, grtr];
 	barChart.update();
-document.getElementById('meanetc').innerHTML ="<b>You clicked:</b> " + centerround + "<br><b>Center Depth</b> =" + identifiedPixel.properties.value + "<br><b>Pings Sampled</b> =" + num + "<br><b>Mean</b> = " + yup + "m <br><b>Values shallower than 100m</b> = " + lessthanhundo + "%" ;
-
+	meanetc.innerHTML ="<b>You clicked:</b> " + centerround + "<br><b>Center Depth</b> =" + identifiedPixel.properties.value + "<br><b>Pings Sampled</b> =" + num + "<br><b>Mean</b> = " + yup + "m <br><b>Values shallower than 100m</b> = " + lessthanhundo + "%" + "<br>";
    });
-  });
-		</script>
 
-	</body>
+  });
+});
+
+</script>
+
+</body>
 </html>
