@@ -1,24 +1,16 @@
 <html>
 
 <head>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-		<!-- Leflet Geotiff Reader -->
-		    <script src="https://unpkg.com/geotiff@0.4.1/dist/main.js"></script>
-		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/leaflet-geotiff.js"></script>
-		    <script src="https://stuartmatthews.github.io/leaflet-geotiff/vendor/plotty.js"></script>
+		<!-- Leaflet -->
+ 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+		<script src="Leaflet-butbetter.js"></script>
+
 
 		<!-- Leflet Sidebar -->
     <link rel="stylesheet" href="css/leaflet-sidebar.css" />
     <script src="js/leaflet-sidebar.js"></script>
 
-		<!-- Proj4js - required BEFORE dataset import -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 
-		<!-- ESRI leaflet -->
- <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
-    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
-    crossorigin=""></script>
 	
 
 <style>
@@ -37,18 +29,135 @@ html, body {
 
 
 <body>
-<div id="mapid"></div>
+    <script src="js/leaflet-sidebar.js"></script>
+
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    sidebar-v2
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>Example text </p>            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="mapid" class="sidebar-map"></div>
 
 <script>
 
-var mymap = L.map('mapid');
-mymap.setView([70, -133], 7);
+//this is where we initialize our map with its starting attributes
+var mymap = L.map('mapid')
+//setting the start view to Whitehorse cause idk, gotta start somewhere
+mymap.setView([60, -110], 3.45);
+//last attribute here is the zoom level to start out with. Higher is closer. 5 is around province-sized. 10-13 is around city-sized.
 
-L.esri.basemapLayer("Gray").addTo(mymap);
-L.esri.imageMapLayer({
+//toggle basemap layers
+var basemaps = {
+    GEBCO: L.tileLayer.wms('https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?', {
+        layers: 'GEBCO_Latest'
+    }),
+    CATZOC: L.tileLayer('https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/Areas_of_Concern/MapServer/tile/{z}/{y}/{x}', {
+        layers: 'Areas_of_Concern'
+    }),
+    'GMRT_base': L.tileLayer.wms('https://www.gmrt.org/services/mapserver/wms_merc?', {
+	layers: 'topo',
+	format: 'image/png',
+	transparent: true,
+    }),
+    'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+    }),
+};
+
+
+var overlaymaps = {
+    'NONNA-100': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 100 Tiles',
+	format: 'image/png',
+	transparent: true
+    }),
+
+    'NONNA-10': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
+        layers: 'caris:NONNA 10 Tiles',
+	format: 'image/png',
+	transparent: true,
+    }),
+
+    'GMRT_masked': L.tileLayer.wms('https://www.gmrt.org/services/mapserver/wms_merc_mask?', {
+	layers: 'topo',
+	format: 'image/png',
+	transparent: true,
+    }),
+
+    'IHO Combined Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
-      attribution: 'heyhey'
-    }).addTo(mymap);
+    }),
+
+    'BAG_Bathy': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/bag_bathymetry/ImageServer',
+    }),
+
+    'GEBContours': L.tileLayer('https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}', {
+    }),
+
+    'LocalWMS': L.tileLayer.wms('http://localhost:8080/geoserver/test/wms?', {
+        layers: 'testytest',
+	format: 'image/png',
+	transparent: true,
+    }),
+
+};
+
+L.control.layers(basemaps, overlaymaps).addTo(mymap);
+basemaps.GEBCO.addTo(mymap);
+overlaymaps.GEBContours.addTo(mymap);
+map.on("layeradd", function (event) {
+  GEBContours.bringToFront();
+});
+
+
+var sidebar = L.control.sidebar('sidebar').addTo(mymap);
+
+
+
+//add uploaded geotiff layer over top
+
+const renderer = L.LeafletGeotiff.plotty(opt);
+var nonns = L.leafletGeotiff(
+		url = './nonna.tif', 
+		options = {
+		band: 1,
+		colorScale: "bone",
+}).addTo(mymap);
+
 
 </script>
 
