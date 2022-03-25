@@ -1,0 +1,95 @@
+<html>
+
+<head>
+		<!-- Leaflet w plugins -->
+ 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+		<script src="Leaflet-butbetter.js"></script>
+
+<script
+			  src="https://code.jquery.com/jquery-3.6.0.js"
+			  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+			  crossorigin="anonymous"></script>
+
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+<body>
+
+<style>
+  #pixelValue {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+  }
+</style>
+
+<div id="map"></div>
+<div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
+
+
+<script src="2014_Amundsen.js" type="text/javascript"></script>
+<script>
+
+  var renderingRule = {
+    rasterFunction: 'Hillshade',
+    rasterFunctionArguments: {
+      Azimuth: 215,
+      Altitude: 60,
+      ZFactor: 1
+    },
+    variableName: 'DEM'
+  };
+
+  // sample server in this example is not CORS enabled, so use JSONP
+  L.esri.get = L.esri.get.JSONP;
+
+  var map = L.map('map').setView([39, -105], 4);
+
+  var hillshade = L.esri.imageMapLayer({
+    url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    renderingRule: renderingRule,
+    useCors: false
+  }).addTo(map);
+
+
+function onEachFeature(feature, layer) {
+		var popupContent = '<p>I started out as a GeoJSON ' +
+				feature.geometry.type + ', but now I\'m a Leaflet vector!</p>';
+
+		if (feature.properties && feature.properties.popupContent) {
+			popupContent += feature.properties.popupContent;
+		}
+
+		layer.bindPopup(popupContent);
+	}
+
+var freeBusLayer = L.geoJSON(freeBus, {
+
+		filter: function (feature, layer) {
+			if (feature.properties) {
+				// If the property "underConstruction" exists and is true, return false (don't render features under construction)
+				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
+			}
+			return false;
+		},
+
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+
+
+L.esri.basemapLayer("Gray").addTo(map);
+L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }).addTo(map);
+
+</script>
+
+</body>
+</html>
