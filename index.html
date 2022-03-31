@@ -237,7 +237,7 @@ The above webmap would not be possible without the following javascript plugings
 <br>
 Map data is provided by the following organizations:<br>
 -<a href="https://unb.ca">The University of New Brunswick (UNB)</a><br>
--<a href="https://data.chs-shc.ca/>The Canadian Hydrographic Service (CHS)</a><br>
+-<a href="https://data.chs-shc.ca/">The Canadian Hydrographic Service (CHS)</a><br>
 -<a href="https://www.ncei.noaa.gov/maps/bathymetry/">The International Hydrographic Organization (IHO)</a><br>
 -<a href="https://www.gmrt.org/GMRTMapTool/">The Global Multi-Resolution Topographic Synthesis (GMRT)</a><br>
 -<a href="https://www.arcgis.com/home/group.html?id=702026e41f6641fb85da88efe79dc166#overview">The Environmental Systems Research Institute (ESRI)</a><br>
@@ -282,7 +282,7 @@ var overlays = {
     'IHO Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     }),
-  "GEBCO-Contours": L.tileLayer(
+  "GEBCO - Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
   }),
 
@@ -290,7 +290,7 @@ var overlays = {
 
 //Init BaseMaps
 var basemaps = {
-  "OpenStreetMaps": L.tileLayer(
+  "Plain Black": L.tileLayer(
     "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     {
       id: "osm.streets"
@@ -300,6 +300,18 @@ var basemaps = {
     "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
     {
       layers: "GEBCO_Latest"
+    }
+  ),
+  "GEBCO - Gaps": L.tileLayer.wms(
+    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+    {
+      layers: "GEBCO_Latest_3"
+    }
+  ),
+  "GEBCO - Sub-Ice Bathy": L.tileLayer.wms(
+    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+    {
+      layers: "GEBCO_Latest_sub_ice_topo"
     }
   ),
   "Google-Satellite": L.tileLayer(
