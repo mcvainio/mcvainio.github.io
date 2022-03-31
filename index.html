@@ -113,6 +113,12 @@ body,
 #querytext {
 		float: left;
 			}
+#borderedtxt {
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 80%;
+  float: center;
+}
   #pixelValue {
     position: absolute;
     top: 10px;
@@ -159,7 +165,9 @@ body,
 <img src="https://imgur.com/o8czHwF.png" width="100%">
 <img src="https://imgur.com/xAHw4bd.png" width="27%">
 <img src="https://imgur.com/MhhUKFw.png" width="71%"><br><br><br>
-<p style="background-color:powderblue;"><center>Welcome the the Arctic seabed viewer!<br> Choose a basemap &/or an overlay map to get started.</center></p>
+<center>
+<div id="borderedtxt"><p><center>Welcome the the Arctic seabed viewer!<br> Choose a basemap &/or an overlay map to get started.</center></p></div>
+</center>
 <br>
       <span id="layercontrol"></span>
     </div>
