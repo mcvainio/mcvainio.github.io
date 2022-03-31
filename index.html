@@ -159,7 +159,7 @@ body,
 <img src="https://imgur.com/o8czHwF.png" width="100%">
 <img src="https://imgur.com/xAHw4bd.png" width="27%">
 <img src="https://imgur.com/MhhUKFw.png" width="71%"><br><br><br>
-<p style="background-color:#000000"><center>Welcome the the Arctic seabed viewer!<br> Choose a basemap &/or an overlay map to get started.</center></p>
+<p style="background-color:powderblue;"><center>Welcome the the Arctic seabed viewer!<br> Choose a basemap &/or an overlay map to get started.</center></p>
 <br>
       <span id="layercontrol"></span>
     </div>
@@ -282,7 +282,7 @@ var overlays = {
     'IHO Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     }),
-  "GEBCO Contours": L.tileLayer(
+  "GEBCO-Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
   }),
 
@@ -332,7 +332,7 @@ var mapOptions = {
   center: [70, -105],
   zoom: 3.5,
 
-  layers: [basemaps.OpenStreetMaps],
+  layers: [basemaps.GEBCO],[overlays.GEBCO-Contours]
 };
 
 
