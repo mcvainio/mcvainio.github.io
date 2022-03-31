@@ -332,14 +332,14 @@ var mapOptions = {
   center: [70, -105],
   zoom: 3.5,
 
-  layers: [basemaps.GEBCO],[overlays.GEBCO-Contours]
+  layers: [basemaps.GEBCO]
 };
 
 
 
 //Render Main Map
 var map = L.map("map", mapOptions);
-
+overlays.GEBCO-Contours.addTo(map)
 
 //Render Zoom Control
 L.control
