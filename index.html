@@ -173,16 +173,15 @@ body,
                     I might take the ship linepaths from the main menu and put them in this panel instead.
                 </p>
                 <p>
-                    The will be colour-coded by year & vessel... eventually<br>
+                    They will be colour-coded by year & vessel.y<br>
 <br>
 Click the button below to demo a 3D profile comparison.
 <br>
-Click the button below for a 3D profile.<br>
 <button class='btn' onclick="spawn3d()"><i class="fa fa-cube"></i></button>
 <br><br>
-Maybe a user could make a selection along the line to pull up a 3D profile? With 3D surfaces for each interface?<br><br>
-Another potential use for the 3D plot could be to compare WMS layers in 3D.<br><br>
-I'm gonna add a section here at the bottom explaining how to read/interpret the linepaths.
+Maybe a user could make a selection along a shiptrack to pull up a 3D profile of the sub bottom profile? With 3D surfaces for each interface?<br><br>
+Another potential use for the 3D plot could be to compare bathymetry layers in 3D.<br><br>
+I'm also gonna add a section here at the bottom explaining how to read/interpret the linepaths for any laypeople or non-scientists that might visit this website.
                 </p>
  
             </div>
@@ -197,7 +196,7 @@ I'm gonna add a section here at the bottom explaining how to read/interpret the 
                 <p>
                     Click on a shape to draw it on the map.<br>
 <span id="drawcontrol"></span><br>
-Editing & deleting shapes is not currently supported, but it will be fixed soon.
+Editing & deleting shapes is not currently supported, but I will fix it soon.
 </p>
             </div>
 
@@ -206,7 +205,7 @@ Editing & deleting shapes is not currently supported, but it will be fixed soon.
                     Stats
                     <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
                 </h1>
-                DOUBLE click on a graph type to display stats in the popup window.<br>
+		Click <b><u>TWICE</u></b>on a graph type to display some stats in the popup window.<br>
 <button class='btn' onclick="spawnvenn();"><i class="fa fa-chart-pie"></i></button>
 <button class='btn' onclick="spawnbar()"><i class="fa fa-chart-simple"></i></button>
 <button class='btn' onclick="spawnscatter()"><i class="fa fa-chart-line"></i></button>
@@ -223,7 +222,7 @@ Editing & deleting shapes is not currently supported, but it will be fixed soon.
                     <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
                 </h1>
                 <p>
-                    User settings will go here. Changing colour scale eventually. 
+                    Map settings will go here. You will be able to change colour scale of layers eventually. 
 <br><br>
 <u><b>CREDITS</b></u><br>
 The above webmap would not be possible without the following javascript plugings<br>
@@ -378,7 +377,7 @@ $(".leaflet-control-layers-separator").after("<br><strong class='title'>Overlay 
                 id:   'gap-analysis',
                 tab:  '<i class="fa fa-arrows-left-right-to-line"></i>',
                 title: 'Gap Analysis',
-                pane: '<p>This is where gap analysis tools will go.<p/><p><button onclick="sidebar.enablePanel(\'mail\')">enable extra panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable extra panel</button></p><p><button onclick="addUser()">add user panel</button></b><p>The above are some random functions to interact with the sidebar if we need them</p>',
+                pane: '<p>This is where gap analysis tools will go.<br><br>The below are some random functions to interact with the sidebar if we need them<p/><p><button onclick="sidebar.enablePanel(\'mail\')">enable extra panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable extra panel</button></p><p><button onclick="addUser()">add user panel</button></b><p>Prelim idea for gap analysis is to use geoJSON objects to make polygons highlighting "problem areas" of low coverage. These areas would be calculated from a particular source database (IHO, CHS etc) based on how far point soundings are from one another.</p>',
             })
             // add a tab with a click callback, initially disabled
             .addPanel({
