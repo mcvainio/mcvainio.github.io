@@ -15,7 +15,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src='https://cdn.plot.ly/plotly-2.9.0.min.js'></script>
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
 
 
 <!-- stylesheets & icons -->
@@ -265,15 +265,10 @@ Map data is provided by the following organizations:<br>
 
 
 
-<script src="2014_Amundsen.js" type="text/javascript"></script>
 <script>
 	
-var cities = L.marker([40.697002, -74.024081]).bindPopup('This is Littleton, CO.')
 var pane = document.getElementById('pixelValue');
-var linepath = L.geoJSON(freeBus, {
-		onEachFeature: onEachFeature,
-		style: mystyle,
-	})
+
 
 
 //Init Overlays
@@ -290,7 +285,6 @@ var overlays = {
   "GEBCO Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
   }),
-  "2014 Amundsen": linepath,
 
 };
 
