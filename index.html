@@ -181,7 +181,7 @@ body,
                     I might take the ship linepaths from the main menu and put them in this panel instead.
                 </p>
                 <p>
-                    They will be colour-coded by year & vessel.y<br>
+                    They will be colour-coded by year & vessel.<br>
 <br>
 Click the button below to demo a 3D profile comparison.
 <br>
@@ -276,7 +276,9 @@ Map data is provided by the following organizations:<br>
 <script>
 	
 var pane = document.getElementById('pixelValue');
-
+  var renderingRule = {
+  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0", 
+};
 
 
 //Init Overlays
@@ -289,6 +291,10 @@ var overlays = {
     }),
     'IHO Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }),
+    'IHO Mosaic Recoloured': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+      renderingRule: renderingRule,
     }),
   "GEBCO - Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
