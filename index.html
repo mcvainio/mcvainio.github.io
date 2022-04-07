@@ -73,17 +73,6 @@ body,
   margin-bottom: 5px;
 }
 
-#drawcontrol {
-  display: inline-block;
-  width: 100%;
-  padding: 10px;
-  background-color: transparent;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  -webkit-filter: hue-rotate(90deg);
-}
-
 #pie-holder {
 		width: 350px;
 		height: 100%;
@@ -140,11 +129,11 @@ body,
   <div class="leaflet-sidebar-tabs">
     <!-- top aligned tabs -->
     <ul role="tablist">
-      <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
-      <li><a href="#autopan" role="tab"><i class="fa fa-ship"></i></a></li>
+      <li><a href="#home" role="tab" title="Layers"><i class="fa fa-bars"></i></a></li>
+      <li><a href="#autopan" role="tab" title="Shiptracks"><i class="fa fa-ship"></i></a></li>
 
-     <li><a href="#shapes" role="tab"><i class="fa fa-shapes"></i></a></li>
-      <li><a href="#chartz" role="tab"><i class="fa fa-chart-pie"></i></a></li>
+     <li><a href="#shapes" role="tab" title="Sub Bottom Profiles"><i class="fa fa-chart-line"></i></a></li>
+      <li><a href="#chartz" role="tab" title="Spatial Querying"><i class="fa fa-chart-pie"></i></a></li>
     </ul>
 
      <!-- bottom aligned tabs -->
@@ -204,8 +193,7 @@ I'm also gonna add a section here at the bottom explaining how to read/interpret
                 </h1>
                 <p>
                     Click on a shape to draw it on the map.<br>
-<span id="drawcontrol"></span><br>
-Editing & deleting shapes is not currently supported, but I will fix it soon.
+Editing & deleting shapes is not currently supported, but I will fix it soon (conflicts w my click listener).
 </p>
             </div>
 
@@ -486,7 +474,7 @@ var MyCustomMarker = L.Icon.extend({
 });
 
 var drawPluginOptions = {
-  position: 'topleft',
+  position: 'bottomleft',
   edit: {
     featureGroup: editableLayers, 
     edit: true,
@@ -535,11 +523,6 @@ map.on(L.Draw.Event.CREATED, function (e) {
   // Do whatever else you need to. (save to db, add to map etc)
   editableLayers.addLayer(layer);
 });
-
-var olddrawControl = drawControl.getContainer();
-var newdrawControl = $("#drawcontrol");
-newdrawControl.append(olddrawControl);
-
 
 function spawnvenn(){
   var x = document.getElementById("pie-holder");
