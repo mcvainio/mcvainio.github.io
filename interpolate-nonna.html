@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>ENC Creator</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+  <script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/geotiff.min.js"></script>
+  <script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/raster-marching-squares.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+	<style>
+		#map {
+			width: 680px;
+			height: 500px;
+		}
+	</style>
+
+
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://localhost:8000/geotiffs/greatlakes.tif', true);
+xhr.responseType = 'arraybuffer';
+xhr.onload = function(e) {
+
+    var tiff = GeoTIFF.parse(this.response);
+    var image = tiff.getImage();
+    var tiffWidth = image.getWidth();
+    var tiffHeight = image.getHeight();
+    var rasters = image.readRasters();
+    var tiepoint = image.getTiePoints()[0];
+    var pixelScale = image.getFileDirectory().ModelPixelScale;
+    var geoTransform = [tiepoint.x, pixelScale[0], 0, tiepoint.y, 0, -1*pixelScale[1]];
+
+    var pressData = new Array(tiffHeight);
+    var tempData = new Array(tiffHeight);
+    var uData = new Array(tiffHeight);
+    var vData = new Array(tiffHeight);
+    var bathydata = new Array(tiffHeight);
+//reading in the depth values & interpolating any pixels with no data
+    for (var j = 0; j<tiffHeight; j++){
+        bathydata[j] = new Array(tiffWidth);
+        for (var i = 0; i<tiffWidth; i++){
+			if ((rasters[0][i + j*tiffWidth]) > 3000) {
+				m = i-1;
+				while ((rasters[0][m + j*tiffWidth]) > 3000) {
+					m = m-1;
+				}
+				prev_horiz_depth = (rasters[0][m + j*tiffWidth]);
+				n = i+1;
+				while ((rasters[0][n + j*tiffWidth]) > 3000) {
+					n = n+1;
+				}
+				next_horiz_depth = (rasters[0][n + j*tiffWidth]);
+				p = j-1;
+				while ((rasters[0][i + p*tiffWidth]) > 3000) {
+					p = p-1;
+				}
+				prev_vert_depth = (rasters[0][i + p*tiffWidth]);
+				q = j+1;
+				while ((rasters[0][i + q*tiffWidth]) > 3000) {
+					q = q+1;
+				}
+				next_vert_depth = (rasters[0][i + q*tiffWidth]);
+				bathydata[j][i] = ( prev_horiz_depth*((n-i)/(n-m)) + next_horiz_depth*((i-m)/(n-m)) ) + ( prev_vert_depth)/2
+			} else {
+            		bathydata[j][i] = rasters[0][i + j*tiffWidth];
+			}
+        }
+    }
+
+
+    var intervalsSpd = [-100, -50, -30, -20, -10, -5, -2, 0, 1, 10, 200, 3000];
+    var bathyband = rastertools.isobands(bathydata, geoTransform, intervalsSpd);
+
+    function getColor(d) {
+    return d > 0       ? '#8FBF93' :
+           d < (-30)   ? '#D8F4E1' :
+           d < (-20)   ? '#B6EBDB' :
+           d < (-10)   ? '#A7E0E9' :
+           d < (-5)    ? '#81C3E2' :
+               '#81C3E2';
+            }
+
+
+    function style(feature) {
+    return {
+        fillColor: getColor(feature.properties[0].lowerValue),
+        weight: 2,
+        opacity: 0.9,
+        color: '#74afcb',
+        dashArray: '2',
+        fillOpacity: 1
+      };
+    }
+
+    var bathybandLayer = L.geoJson(bathyband, {
+      style: style
+    });
+
+   //Creating the color scale https://github.com/santilland/plotty/blob/master/src/plotty.js
+   var cs_def = {positions:[0.0,1.0],
+     colors:["#CCC57B" , "#8FBF93", "#81C3E2", "#81C3E2", "#A7E0E9",
+             "#B6EBDB", "#D8F4E1", "#D8F4E1", "#D8F4E1"]};
+   var scaleWidth = 256;
+   var canvasColorScale = document.createElement('canvas');
+    canvasColorScale.width = scaleWidth;
+    canvasColorScale.height = 1;
+    canvasColorScale.style.display = "none";
+
+    document.body.appendChild(canvasColorScale);
+
+   var contextColorScale = canvasColorScale.getContext("2d");
+   var gradient = contextColorScale.createLinearGradient(0, 0, scaleWidth, 1);
+
+
+   contextColorScale.fillRect(0, 0, scaleWidth, 1);
+
+   var csImageData = contextColorScale.getImageData(0, 0, scaleWidth-1, 1).data;
+
+
+
+   //Calculating the image
+   var width = 680,
+       height = 500;
+
+   var canvasRaster = document.createElement('canvas');
+    canvasRaster.width = width;
+    canvasRaster.height = height;
+    canvasRaster.style.display = "none";
+
+    document.body.appendChild(canvasRaster);
+
+   var contextRaster = canvasRaster.getContext("2d");
+
+   var id = contextRaster.createImageData(width,height);
+   var data = id.data;
+   var pos = 0;
+   var invGeoTransform = [-geoTransform[0]/geoTransform[1], 1/geoTransform[1],0,-geoTransform[3]/geoTransform[5],0,1/geoTransform[5]];
+   for(var j = 0; j<height; j++){
+     for(var i = 0; i<width; i++){
+       var pointCoordsX = geoTransform[0] + i*tiffWidth*geoTransform[1]/width;
+       var pointCoordsY = geoTransform[3] + j*tiffHeight*geoTransform[5]/height;
+
+
+       var px = invGeoTransform[0] + pointCoordsX * invGeoTransform[1];
+       var py = invGeoTransform[3] + pointCoordsY * invGeoTransform[5];
+
+       var value;
+       if(Math.floor(px) >= 0 && Math.ceil(px) < image.getWidth() && Math.floor(py) >= 0 && Math.ceil(py) < image.getHeight()){
+         var dist1 = (Math.ceil(px)-px)*(Math.ceil(py)-py);
+         var dist2 = (px-Math.floor(px))*(Math.ceil(py)-py);
+         var dist3 = (Math.ceil(px)-px)*(py-Math.floor(py));
+         var dist4 = (px-Math.floor(px))*(py-Math.floor(py));
+         if (dist1 != 0 || dist2!=0 || dist3!=0 || dist4!=0){
+           value = bathydata[Math.floor(py)][Math.floor(px)]*dist1+
+           bathydata[Math.floor(py)][Math.ceil(px)]*dist2 +
+           bathydata[Math.ceil(py)][Math.floor(px)]*dist3 +
+           bathydata[Math.ceil(py)][Math.ceil(px)]*dist4;
+         } else {
+           value = bathydata[Math.floor(py)][Math.floor(px)];
+         }
+       } else {
+         value = -999;
+       }
+         var c = Math.round((scaleWidth-1) * ((value - 8)/88));
+         var alpha = 200;
+         if (c<0 || c > (scaleWidth-1)){
+           alpha = 0;
+         }
+         data[pos]   = csImageData[c*4];
+         data[pos+1]   = csImageData[c*4+1];
+         data[pos+2]   = csImageData[c*4+2];
+         data[pos+3]   = alpha;
+         pos = pos + 4
+
+     }
+   }
+   contextRaster.putImageData( id, 0, 0);
+   var imageBounds = [[geoTransform[3], geoTransform[0]], [geoTransform[3] + tiffHeight*geoTransform[5], geoTransform[0] + tiffWidth*geoTransform[1]]];
+
+   var imageLayer = L.imageOverlay(canvasRaster.toDataURL(), imageBounds,{
+     opacity: 0.5
+   });
+
+   var baseLayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+   	maxZoom: 18,
+   	id: 'mapbox.light'
+   });
+
+
+
+//defining starting view based on file name 
+var loadView = ([(geoTransform[3] + tiffHeight*geoTransform[5]/2), (geoTransform[0] + tiffWidth*geoTransform[1]/2)])
+
+//drawing map
+  var map = L.map('map', {
+     layers: [baseLayer, bathybandLayer]
+   }).setView(loadView, 6);
+//for some reason this is adding a buffer border around the image...
+map.fitBounds(imageBounds);
+L.control.scale().addTo(map)
+
+
+   L.control.layers(null, {
+    "ENC Contours": bathybandLayer,
+    "Image": imageLayer
+    }).addTo(map);
+
+
+  map.on('click', function(e) {
+    var xTiff = (e.latlng.lng - geoTransform[0])/geoTransform[1];
+    var yTiff = (e.latlng.lat - geoTransform[3])/geoTransform[5];
+    var spd = bathydata[Math.round(yTiff)][Math.round(xTiff)];
+
+    L.popup()
+      .setLatLng(e.latlng)
+      .setContent("You clicked: (" + e.latlng.lat.toFixed(2) + "," + e.latlng.lng.toFixed(2) + ")<br>Depth: " + spd.toFixed(1) + " m <br/>")
+      .openOn(map);
+  });
+  };
+  xhr.send();
+</script>
+</body>
+</html>
