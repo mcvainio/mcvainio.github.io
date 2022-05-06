@@ -2,19 +2,19 @@
 <html>
 <head>
 
-	<title>ENC Creator</title>
+<title>ENC Generator</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-	<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
-  <script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/geotiff.min.js"></script>
-  <script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/raster-marching-squares.min.js"></script>
-<script src="https://d3js.org/topojson.v1.min.js"></script>
+<!-- plugins -->
+<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+<script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/geotiff.min.js"></script>
+<script src="https://geoexamples.com/d3-raster-tools-docs/code_samples/raster-marching-squares.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
-	<style>
+
+<style>
 		#map {
 			width: 680px;
 			height: 500px;
@@ -24,20 +24,25 @@
 			position: relative;
 			float: right;
 	  		font-family: Tahoma, sans-serif;
-
 		}
-	</style>
+		.my-div-icon {
+		background: transparent;
+		font-size: 8px;
+		}
+</style>
 
 
 </head>
 <body>
 
 <div id='map'></div>
-<div id='legend'><font size=-2><u>CanVec Basemap Legend</u></font><br><img src="http://localhost:8000/legend.png" width="40%"></div>
-<script>
+<div id='legend'><font size=-2><u>CanVec Basemap Legend</u></font><br><img src="https://i.imgur.com/fFWnc48.png" width="40%"></div>
 
+<script>
+//import tiff
+//this is the URL you'll want to change if you're trying to work with a different geotiff
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'http://localhost:8000/geotiffs/gr8lakes.tif', true);
+xhr.open('GET', 'http://localhost:8000/geotiffs/pacific.tif', true);
 xhr.responseType = 'arraybuffer';
 xhr.onload = function(e) {
 
@@ -66,7 +71,7 @@ xhr.onload = function(e) {
         }
     }
 
-
+//define isoband & contour properties
     var intervalsSpd = [-100, -50, -30, -20, -10, -5, -2, -0.001, 0, 0.001, 8, 8.1, 2000, 3000];
     var bathyband = rastertools.isobands(bathydata, geoTransform, intervalsSpd);
 
@@ -93,7 +98,7 @@ xhr.onload = function(e) {
                '0';
             }
 
-
+//filling isobands
     function style(feature) {
     return {
         fillColor: getColor(feature.properties[0].lowerValue),
@@ -105,11 +110,12 @@ xhr.onload = function(e) {
       };
     }
 
+//define isobands as geojson layer that you can add to map
     var bathybandLayer = L.geoJson(bathyband, {
       style: style
     });
 
-   //Creating the color scale https://github.com/santilland/plotty/blob/master/src/plotty.js
+   //creating the color scale
    var cs_def = {positions:[0.0,1.0],
      colors:["#CCC57B" , "#8FBF93", "#81C3E2", "#81C3E2", "#A7E0E9",
              "#B6EBDB", "#D8F4E1", "#D8F4E1", "#D8F4E1"]};
@@ -131,7 +137,7 @@ xhr.onload = function(e) {
 
 
 
-   //Calculating the image
+//calculating the image
    var width = 680,
        height = 500;
 
@@ -190,6 +196,7 @@ xhr.onload = function(e) {
    contextRaster.putImageData( id, 0, 0);
    var imageBounds = [[geoTransform[3], geoTransform[0]], [geoTransform[3] + tiffHeight*geoTransform[5], geoTransform[0] + tiffWidth*geoTransform[1]]];
 
+//define some layers for later
    var imageLayer = L.imageOverlay(canvasRaster.toDataURL(), imageBounds,{
      opacity: 0.5
    });
@@ -210,6 +217,11 @@ xhr.onload = function(e) {
 	format: 'image/png',
 	transparent: true
     })
+   var canvecLayer3 = L.tileLayer.wms('https://maps.geogratis.gc.ca/wms/canvec_en?', {
+        layers: 'land',
+	format: 'image/png',
+	transparent: true
+    })
 
 
 //defining starting view 
@@ -219,12 +231,17 @@ var loadView = ([(geoTransform[3] + tiffHeight*geoTransform[5]/2), (geoTransform
   var map = L.map('map', {
      layers: [baseLayer, bathybandLayer],
    }).setView(loadView, 6);
-//for some reason this is adding a buffer border around the image...
+
+//fit view to tiff limits
 map.fitBounds(imageBounds);
+
+//add extras
 L.control.scale().addTo(map);
 canvecLayer1.addTo(map);
 canvecLayer2.addTo(map);
 map.attributionControl.addAttribution('Canvec Basemap & NONNA-10 Overlay Sourced from CHS');
+
+//add north arrow
 var north = L.control({position: "bottomright"});
 north.onAdd = function(map) {
     var div = L.DomUtil.create("div", "info legend");
@@ -233,13 +250,13 @@ north.onAdd = function(map) {
 }
 north.addTo(map);
 
-
+//adding layer toggle in top right
    L.control.layers(null, {
     "SVG Contours": bathybandLayer,
-    "Soundings": bathybandLayer
+    "Soundings": bathybandLayer,
     }).addTo(map);
 
-//add buoys
+//adding some buoys
 var MyCustomMarker = L.Icon.extend({
   options: {
     shadowUrl: null,
@@ -253,6 +270,23 @@ L.marker([47.867, -89.313], {icon:new MyCustomMarker()}).addTo(map).bindPopup("S
 L.marker([48.223, -88.366], {icon:new MyCustomMarker()}).addTo(map).bindPopup("Station PILM4 - Passage Island, MI")
 
 
+//function for adding sounding at point xy
+function addpt(y, x) {
+    var xTiffy = (x - geoTransform[0])/geoTransform[1];
+    var yTiffy = (y - geoTransform[3])/geoTransform[5];
+    var bthy = bathydata[Math.round(yTiffy)][Math.round(xTiffy)];
+var soundingicon = L.divIcon({ 
+    html: bthy.toFixed(1),
+    className: 'my-div-icon',
+});
+var ptyx = L.marker([y, x], {icon: soundingicon}).addTo(map);
+}
+
+//just a demo sounding
+addpt(53.07, -131.63);
+
+
+//click listener to query point depths
   map.on('click', function(e) {
     var xTiff = (e.latlng.lng - geoTransform[0])/geoTransform[1];
     var yTiff = (e.latlng.lat - geoTransform[3])/geoTransform[5];
@@ -265,6 +299,7 @@ L.marker([48.223, -88.366], {icon:new MyCustomMarker()}).addTo(map).bindPopup("S
   });
   };
   xhr.send();
+
 </script>
 </body>
 </html>
