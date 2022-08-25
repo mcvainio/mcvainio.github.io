@@ -36,8 +36,11 @@
 
 
 L.esri.basemapLayer("Gray").addTo(map);
-L.esri.imageMapLayer({
-      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+L.tileLayer.wms(
+    "https://data.chs-shc.ca/geoserver/ows?", {
+      layers: "caris:NONNA 100 Tiles",
+      format: "image/png",
+      transparent: true
     }).addTo(map);
 
 </script>
