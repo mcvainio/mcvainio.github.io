@@ -37,8 +37,8 @@
 
 L.esri.basemapLayer("Gray").addTo(map);
 L.tileLayer.wms(
-    "https://data.chs-shc.ca/geoserver/ows?", {
-      layers: "caris:NONNA 100 Tiles",
+    "http://localhost:8080/geoserver/test/wms", {
+      layers: "test:test_tiff",
       format: "image/png",
       transparent: true
     }).addTo(map);
