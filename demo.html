@@ -23,11 +23,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.1.1/css/leaflet-sidebar.min.css"><link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.css">
 
-</head>
 
-
-
-		<style>
+		<style> 
 			/* style the map container*/
 			#mapid {
 				width: 50%;
@@ -103,9 +100,7 @@
 				border: 2px solid black;
 				overflow-y:auto;
 				border-radius: 10px;
-
 			}
-
 
 	#topp {
 	  font-family: Tahoma, sans-serif;
@@ -113,7 +108,8 @@
 	  position: absolute;
 	  top: -1%;
 	  height: 4%;
-	}	
+	}
+
 			.button {
   			background-color: #4CAF50;
   			border: none;
@@ -125,8 +121,7 @@
   			font-size: 16px;
   			margin: 4px 1px;
   			cursor: pointer;
-			}
-
+}
 body {
   font-family: Tahoma, sans-serif;
   background-color: #000000;
@@ -200,19 +195,19 @@ var basemaps = {
 	format: 'image/png',
 	transparent: true,
     }),
-    'Ocean Basemap (ESRI)': L.tileLayer('https://maps.ccom.unh.edu/server/rest/services/GEBCO2021/GEBCO_2021_Global_Bathymetry_and_Elevations/MapServer/tile/{z}/{y}/{x}', {
+    'Ocean Basemap (ESRI)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
     }),
 };
 
 var overlaymaps = {
-    'NONNA-100': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
-        layers: 'caris:NONNA 100 Tiles',
+    'NONNA-100': L.tileLayer.wms('https://maps.geogratis.gc.ca/wms/canvec_en?', {
+        layers: 'elevation',
 	format: 'image/png',
 	transparent: true
     }),
 
     'NONNA-10': L.tileLayer.wms('https://data.chs-shc.ca/geoserver/ows?', {
-        layers: 'caris:NONNA 10 Tiles',
+        layers: 'shoreline_small',
 	format: 'image/png',
 	transparent: true,
     }),
@@ -223,23 +218,12 @@ var overlaymaps = {
 	transparent: true,
     }),
 
-    'Nav_Charts': L.esri.tiledMapLayer({
-      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Specialty/World_Navigation_Charts/MapServer'
-    }),
-
     'IHO_Combined_Mosaic': L.esri.imageMapLayer({
-      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic_subsets/ImageServer',
-	format: 'image/png',
-	transparent: true,
-
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     }),
 
     'BAG_Bathy': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/bag_bathymetry/ImageServer',
-    }),
-
-    'etopo': L.esri.tiledMapLayer({
-	url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/web_mercator/etopo1_hillshade/MapServer/'
     }),
 
     'GEBContours': L.tileLayer('https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}', {
@@ -253,8 +237,10 @@ basemaps.GEBCO.addTo(map);
 overlaymaps.IHO_Combined_Mosaic.addTo(map);
 overlaymaps.GEBContours.addTo(map);
 
+
 //define a bunch of variables for click listener later so they can be called on globally
 var circleLyr;
+var sqrLyr;
 var identifiedPixel;
 var yup;
 var lessthanhundo;
@@ -269,18 +255,16 @@ var woop;
 var points;
 
 //for some reason the circle tool won't work unless there's already one drawn before the click
-drawcircle([-135,71]);
+drawsqr([-135,71]);
 
 
 //now comes a bunch of functions
-function drawcircle(lngLat){
-				const circle = turf.circle(turf.point(lngLat), 5, {
-					units: 'kilometers',
-					steps: 64,
-				});
+function drawsqr(lngLat){
+				var bbox = [lngLat[0]+0.1, lngLat[1]+0.03, lngLat[0]-0.1, lngLat[1]-0.03];
+				const sqr = turf.bboxPolygon(bbox);
 
 
-				circleLyr = L.geoJson(circle, {
+				sqrLyr = L.geoJson(sqr, {
 					style: {
 						color: 'yellow',
 						weight: 0.5,
@@ -289,8 +273,8 @@ function drawcircle(lngLat){
 						fillOpacity: 0.3,
 					}
 				});
-circleLyr.addTo(map);
-getmean(circleLyr);
+sqrLyr.addTo(map);
+getmean(sqrLyr);
 };
 
 function getmean(circ){
@@ -500,9 +484,9 @@ var barChart2 = new Chart(ctx, {
 //draws new circle on click, erases old one, recalculates stats & refreshes graphs
 document.addEventListener('DOMContentLoaded', function(event) {
   map.addEventListener('click', function (e) {
-	map.removeLayer(circleLyr);
+	map.removeLayer(sqrLyr);
 	var center = [e.latlng.lng, e.latlng.lat];
-	drawcircle(center);
+	drawsqr(center);
 	var centerround = [Number(Math.round((e.latlng.lng)+'e2')+'e-2'), Number(Math.round((e.latlng.lat)+'e2')+'e-2')];	
     if (identifiedPixel) {
       meanetc.innerHTML = 'Loading';
