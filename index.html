@@ -1,81 +1,118 @@
 <html>
 <head>
-	<title>Single Query Demo</title>
-	<!-- Leaflet w plugins -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
-<script
-			  src="https://code.jquery.com/jquery-3.6.0.js"
-			  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-			  crossorigin="anonymous"></script>
-
-
-  <style>
-    body { margin:0; padding:0; }
-    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-  </style>
+<title>Web GIS Examples</title>
+<link rel=stylesheet href="https://stemkoski.github.io/Three.js/css/index.css"/>
 </head>
 <body>
 
-//here I am just setting up a box in the top right that we can display the results of our query in later
-<style>
-  #pixelValue {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-    background: white;
-    padding: 1em;
-  }
-</style>
-
-<div id="map"></div>
-<div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
-
+<div class="bigTitle">Web GIS Examples</div>
+<hr>
+The goal of this collection is to provide a set of basic and instructive examples that introduce a variety of open source plug-ins. Some of these are plug-ins designed for web mapping, while others are more general. The source code for each page contains detailed comments.
+<hr>
+Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">GitHub</a>. Main page layout modified from <a href="https://stemkoski.github.io/Three.js/">Stemkoski's Three JS example page. Last updated: 27 Nov 2022. 
+<hr>
+<hr color="black"> <center><b><u>2D Examples</u></b></center>
+&bull; <a class="toc" href="#hello-world">Leaflet - Display Third-Party WMS</a>
+&bull; <a class="toc" href="#template">Leaflet - Query Third-Party WMS</a>
+&bull; <a class="toc" href="#infobox">Leaflet, DrawJS, ChartJS - Query Spatial Selection</a>
+&bull; <a class="toc" href="#infobox">Leaflet, SidebarJS - Sidebar GUI with Inline Layer Control</a>
 	
-<script>
-//choosing a colour scale for the IHO layer 
-  var renderingRule = {
-  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0"
-  };
-
-  // sample server in this example is not CORS enabled, so use JSONP
-  L.esri.get = L.esri.get.JSONP;
-
-  var map = L.map('map').setView([72, -130], 10);
-
-//this is where we display the IHO data. Since they use an ESRI server, we will need the ESRI-leaflet extension
-  var hillshade = L.esri.imageMapLayer({
-    url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
-    renderingRule: renderingRule,
-    useCors: false
-  }).addTo(map);
-
-//now we add in an event listener that's going to listen for a click on the map. If it gets a click, it will fire a query at the IHO's server, then return the result in the top right.
-//you can make a couple different types of event listeners
-//another one that you might find useful is the mouseover one 
-var identifiedPixel;
-var pane = document.getElementById('pixelValue');
-
-map.addEventListener('click', function (e)  {
-    if (identifiedPixel) {
-      pane.innerHTML = 'Loading';
-    }
-    hillshade.identify().at(e.latlng).run(function (error, results) {
-      if (error) {
-        return;
-      }
-
-      identifiedPixel = results.pixel;
-      pane.innerHTML = identifiedPixel.properties.value + 'm';
-    });
-  });
+<hr color="black"> <center><b><u>3D Examples</u></b></center>
+&bull; <a class="toc" href="#textures">ThreeJS - Plain Plane</a>
+&bull; <a class="toc" href="#texture-repeat">ThreeJS - Modify Plane Elevations Using WCS</a>
+&bull; <a class="toc" href="#texture-text3D">ThreeJS - Modify Plane Colours Using JS Array</a>
+&bull; <a class="toc" href="#translucence">ThreeJS - 3D Seabed Example</a>
+&bull; <a class="toc" href="#shadow">ThreeJS - Generate 3D Scene from 2D Map Selection</a>
 
 
-L.esri.basemapLayer("Gray").addTo(map);
+&bull;
+<hr/>
+<br/><br/>
+<div class="fancy">
+<a name="hello-world"></a>
+<a href="HelloWorld.html" target="_blank">
+<img src="html-images/HelloWorld.png" class="superImage" />
+<br/>Hello World</a>
+<p class ="superText"> A heavily commented but basic scene. Illustrates the setup of a scene, camera, renderer, event handlers (for window resize and fullscreen, provided by the THREEx library), mouse controls to rotate/zoom/pan the scene, mini-display for FPS stats, and setting up basic geometries: a sphere with lighting effects, a multi-colored cube, a plane with an image texture applied, and skybox/fog options for rendering objects distant from the camera.
+<br/> Many of these features are described in more detail in the examples below. 
+</p>
+</div>
 
-</script>
+<div class="fancy">
+<a name="template"></a>
+<a href="Template.html" target="_blank">
+<img src="html-images/Template.png" class="superImage" />
+<br/>Template</a>
+<p class ="superText"> The "Hello World" code with most comments and meshes removed. </p>
+</div>
+
+<div class="fancy">
+<a name="infobox"></a>
+<a href="Infobox.html" target="_blank">
+<img src="html-images/Infobox.png" class="superImage" />
+<br/>Info Box</a>
+<p class ="superText"> The template code with minimal jQuery added to create a button that displays an information dialog box. </p>
+</div>
+
+<div class="fancy">
+<a name="materials-solid"></a>
+<a href="Materials-Solid.html" target="_blank">
+<img src="html-images/Materials-Solid.png" class="superImage" />
+<br/>Materials - Solid</a>
+<p class ="superText"> Illustrates the difference between the Basic, Lambert, and Phong materials. </p>
+</div>
+
+<div class="fancy">
+<a name="textures"></a>
+<a href="Textures.html" target="_blank">
+<img src="html-images/Textures.png" class="superImage" />
+<br/>Textures</a>
+<p class ="superText"> Demonstrates surfaces with textures (image-based materials), including shading and coloring effects. </p>
+</div>
+
+
+<div class="fancy">
+<a name="texture-repeat"></a>
+<a href="Texture-Repeat.html" target="_blank">
+<img src="html-images/Texture-Repeat.png" class="superImage" />
+<br/>Texture - Repeat</a>
+<p class ="superText"> Repeating (tiling) a texture on a surface. </p>
+</div>
+
+<div class="fancy">
+<a name="texture-text3D"></a>
+<a href="Text3D-Textures.html" target="_blank">
+<img src="html-images/Text3D-Textures.png" class="superImage" />
+<br/>Texture - Text3D</a>
+<p class ="superText"> Applying a texture to 3D Text. (Requires repeating texture on surface.) </p>
+</div>
+
+<div class="fancy">
+<a name="translucence"></a>
+<a href="Translucence.html" target="_blank">
+<img src="html-images/Translucence.png" class="superImage" />
+<br/>Translucence</a>
+<p class ="superText"> Illustrates using basic and phong-shaded translucent materials, making image textures translucent, using additive blending for a glow-like effect, and using image textures that already have alpha transparency. </p>
+</div>
+
+<div class="fancy">
+<a name="shadow"></a>
+<a href="Shadow.html" target="_blank">
+<img src="html-images/Shadow.png" class="superImage" />
+<br/>Shadow</a>
+<p class ="superText"> Using spotlights to create shadow effects in a scene. </p>
+</div>
+
+
+<!--
+<div class="fancy">
+<a name="zzzz"></a>
+<a href="zzzz.html" target="_blank">
+<img src="html-images/zzzz.png" class="superImage" />
+<br/>zzzz</a>
+<p class ="superText"> ... </p>
+</div>
+-->
 
 </body>
 </html>
