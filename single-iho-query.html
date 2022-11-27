@@ -1,16 +1,10 @@
 <html>
-
 <head>
-		<!-- Leaflet w plugins -->
- 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-		<script src="Leaflet-butbetter.js"></script>
-
-
-<!-- Proj4 and Proj4Leaflet -->
-<script src="https://unpkg.com/proj4@2.4.3"></script>
-<script src="https://unpkg.com/proj4leaflet@1.0.1"></script>
-		<script src="polarmap-src.js"></script>
-
+	<title>Single Query Demo</title>
+	<!-- Leaflet w plugins -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
 <script
 			  src="https://code.jquery.com/jquery-3.6.0.js"
 			  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
@@ -24,6 +18,7 @@
 </head>
 <body>
 
+//here I am just setting up a box in the top right that we can display the results of our query in later
 <style>
   #pixelValue {
     position: absolute;
@@ -38,16 +33,11 @@
 <div id="map"></div>
 <div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
 
+	
 <script>
-
+//choosing a colour scale for the IHO layer 
   var renderingRule = {
-    rasterFunction: 'Hillshade',
-    rasterFunctionArguments: {
-      Azimuth: 215,
-      Altitude: 60,
-      ZFactor: 1
-    },
-    variableName: 'DEM'
+  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0"
   };
 
   // sample server in this example is not CORS enabled, so use JSONP
@@ -55,14 +45,18 @@
 
   var map = L.map('map').setView([72, -130], 10);
 
+//this is where we display the IHO data. Since they use an ESRI server, we will need the ESRI-leaflet extension
   var hillshade = L.esri.imageMapLayer({
     url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     renderingRule: renderingRule,
     useCors: false
   }).addTo(map);
 
-  var identifiedPixel;
-  var pane = document.getElementById('pixelValue');
+//now we add in an event listener that's going to listen for a click on the map. If it gets a click, it will fire a query at the IHO's server, then return the result in the top right.
+//you can make a couple different types of event listeners
+//another one that you might find useful is the mouseover one 
+var identifiedPixel;
+var pane = document.getElementById('pixelValue');
 
 map.addEventListener('click', function (e)  {
     if (identifiedPixel) {
@@ -78,26 +72,8 @@ map.addEventListener('click', function (e)  {
     });
   });
 
-map.addEventListener('mouseover', function (e) {
-            $.ajax({
-                url: "http://www.marine-geo.org/services/pointserver.php",
-                type: "GET",
-               data: {
-                    'latitude':e.latlng.lat,
-                    'longitude':e.latlng.lng,
-                },
-                async: true,
-                success: function(msg){
-                    $("#pane").text(msg+' m');
-                }
-	});
-  });
-
 
 L.esri.basemapLayer("Gray").addTo(map);
-L.esri.imageMapLayer({
-      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
-    }).addTo(map);
 
 </script>
 
