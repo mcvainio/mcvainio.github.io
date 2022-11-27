@@ -20,6 +20,7 @@
     var axes = new THREE.AxisHelper(100);
     scene.add(axes);
 
+  //you can position the camera farther back from the axes if you want
     var camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.set(0, -200, 50);
 
@@ -27,7 +28,7 @@
     renderer.setSize(width, height);
 
  //this line is the main core of our plane generation
- //the first 2 arguments represent the size of the segments (horizontal & vertical) while the last 2 arguments are how many segments there are
+ //the first 2 arguments represent the size of the segments (horizontal & vertical) while the last 2 arguments control how many segments there are
     var geometry = new THREE.PlaneGeometry(60, 60, 9, 9);
 
  //not colouring in or adding any crazy shading yet. just display as a wireframe in colour black.
