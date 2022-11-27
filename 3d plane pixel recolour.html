@@ -1,5 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.141/build/three.min.js"></script>
-<script src="../lib/TrackballControls.js"></script> 
+<script src="http://thematicmapping.org/playground/webgl/terrain/lib/TrackballControls.js"></script> 
 <html><style>
 body {
       margin: 0;
@@ -25,30 +25,34 @@ body {
   const color = new THREE.Color();
 
   for (let i = 0; i < positionAttribute.count; i ++) {
-    color.setHSL(0, 0, Math.random());
+
+    color.setRGB(Math.random(), Math.random(), Math.random());
+    const alpha = Math.random();
 //push the same colour out 6 times so that it colours all 6 vertices that form one pixel (square bisected by line into 2 triangles)
-    colors.push(color.r, color.g, color.b);
-    colors.push(color.r, color.g, color.b);
-    colors.push(color.r, color.g, color.b);
-    colors.push(color.r, color.g, color.b);
-    colors.push(color.r, color.g, color.b);
-    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b, alpha);
+    colors.push(color.r, color.g, color.b, alpha);
+    colors.push(color.r, color.g, color.b, alpha);
+
+    colors.push(color.r, color.g, color.b, alpha);
+    colors.push(color.r, color.g, color.b, alpha);
+    colors.push(color.r, color.g, color.b, alpha);
+
   }
 
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
 
 
 //create a material for our mesh using the colours generated above
   const material = new THREE.MeshBasicMaterial({
     vertexColors: true,
     transparent: false,
-    wireframe: false,
+    wireframe: true
   });
 
 //put it all together into one object and add to the scene
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
-  mesh.material.side = THREE.DoubleSide
+
 
 //set some rendering variables. necessary
   renderer = new THREE.WebGLRenderer({antialias: true});
