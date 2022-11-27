@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<title>three.js - plane</title>
+<title>Three.js - Plane</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <style>
@@ -18,9 +18,11 @@
 
     var width  = window.innerWidth / 2,
         height = window.innerHeight;
-
+    
+  //setting up the scene is a must for any three js code
     var scene = new THREE.Scene();
 
+  //the axis helper is the rgb lines that you see representing the xyz axes
     var axes = new THREE.AxisHelper(100);
     scene.add(axes);
 
@@ -30,22 +32,27 @@
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(width, height);
 
+ //this line is the main core of our plane generation
+ //the first 2 arguments represent the size of the segments (horizontal & vertical) while the last 2 arguments are how many segments there are
     var geometry = new THREE.PlaneGeometry(60, 60, 9, 9);
 
+ //not colouring in or adding any crazy shading yet. just display as a wireframe in colour black.
     var material = new THREE.MeshBasicMaterial({
         color: 0x333333, 
         wireframe: true
     });
 
+ //make sure to add it to your scene after you've defined it
     var plane = new THREE.Mesh(geometry, material);
     scene.add(plane);
 
+ //the controls are what lets you zoom, pan etc. Trackball is free-rotating, while OrbitControls will maintain a consistent "up" direction
     var controls = new THREE.TrackballControls(camera); 
 
     document.getElementById('webgl1').appendChild(renderer.domElement);
-
     render();
 
+ //make sure to add a rendering function so that your scene will update whenever you pan, zoom etc
     function render() {
         controls.update();    
         requestAnimationFrame(render);
