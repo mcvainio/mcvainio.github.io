@@ -1,17 +1,12 @@
-
-<!doctype html>
-<html lang="en">
+<html>
 <head>
 <title>Three.js - Plane</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <style>
     body { margin: 0; overflow: hidden; }
 </style>
 </head>
+
 <body>
-<div id="webgl1"></div>
-<div id="webgl2"></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.141/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three-trackballcontrols@0.9.0/index.min.js"></script> 
 <script>
@@ -49,7 +44,7 @@
  //the controls are what lets you zoom, pan etc. Trackball is free-rotating, while OrbitControls will maintain a consistent "up" direction
     var controls = new THREE.TrackballControls(camera); 
 
-    document.getElementById('webgl1').appendChild(renderer.domElement);
+    document.body.appendChild(renderer.domElement);
     render();
 
  //make sure to add a rendering function so that your scene will update whenever you pan, zoom etc
