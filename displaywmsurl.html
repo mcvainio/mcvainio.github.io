@@ -1,0 +1,113 @@
+<html>
+<head>
+	<title>Test Map</title>
+	<!-- Leaflet w plugins -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
+<script src="http://turban.github.io/webgl-terrain/wxs/topo2.layers.js"></script>
+<script
+			  src="https://code.jquery.com/jquery-3.6.0.js"
+			  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+			  crossorigin="anonymous"></script>
+
+
+  <style>
+    body { margin:0; padding:0}
+    #map { position: absolute; top:0; bottom:0; left:0; width:100%;}
+  </style>
+</head>
+<body>
+<style>
+  #pixelValue {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+  }
+</style>
+
+<div id="map"></div>
+<div id="pixelValue" class="leaflet-bar">Input custom WMS URL below:<br>
+ <form id="formid">
+  <label for="wmsURL">WMS URL:</label><br>
+  <input type="text" id="wmsurl" name="wmsurl"><br>
+  <label for="layerinput">Layer name:</label><br>
+  <input type="text" id="layerinput" name="layerinput"><br>
+  <input type="button" name="button" value="Submit" onClick="readcustominput(this.form)">
+</form> 
+</div>
+
+	
+<script>
+
+
+const map = L.map('map', {
+		center: [61, 8],
+		zoom: 5
+	});
+
+const basemaps = {
+		Topography: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+			layers: 'TOPO-WMS'
+		}),
+
+		Places: L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+			layers: 'OSM-Overlay-WMS'
+		}),
+
+		'Topography, then places': L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+			layers: 'TOPO-WMS,OSM-Overlay-WMS'
+		}),
+
+	};
+
+var overlays = {
+  "GEBCO - Contours": L.tileLayer(
+    "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
+  }),
+  "GEBCO - Contours": L.tileLayer(
+    "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
+  }),
+    'IHO Mosaic': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }),
+ "CHS NONNA-100": L.tileLayer.wms(
+    "https://data.chs-shc.ca/geoserver/ows?", {
+      layers: "caris:NONNA 100 Tiles",
+      format: "image/png",
+      transparent: true
+    }),
+ "Norway Topo": L.tileLayer.wms(
+    "http://openwms.statkart.no/skwms1/wms.topo2?", {
+      layers: layers,
+      format: "image/png",
+      transparent: true
+    }),
+};
+
+var layerControl = L.control
+  .layers(basemaps, overlays, {
+    position: "topright",
+    collapsed: false
+  })
+  .addTo(map);
+
+	basemaps.Topography.addTo(map);
+
+function readcustominput(form) {
+	var input1 = form.wmsurl.value;
+	var input2 = form.layerinput.value;
+L.tileLayer.wms(
+    input1, {
+      layers: input2,
+      format: "image/png",
+      transparent: true
+}).addTo(map)
+}
+</script>
+
+</body>
+</html>
