@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
-<script src="http://turban.github.io/webgl-terrain/wxs/topo2.layers.js"></script>
 <script
 			  src="https://code.jquery.com/jquery-3.6.0.js"
 			  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
@@ -65,6 +64,9 @@ const basemaps = {
 	};
 
 var overlays = {
+  "GEBCO - Contours": L.tileLayer(
+    "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
+  }),
   "GEBCO - Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
   }),
