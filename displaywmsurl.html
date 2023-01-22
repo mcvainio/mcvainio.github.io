@@ -44,7 +44,7 @@
 
 
 const map = L.map('map', {
-		center: [61, 8],
+		center: [72, -130],
 		zoom: 5
 	});
 
@@ -67,9 +67,6 @@ var overlays = {
   "GEBCO - Contours": L.tileLayer(
     "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
   }),
-  "GEBCO - Contours": L.tileLayer(
-    "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
-  }),
     'IHO Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     }),
@@ -79,7 +76,7 @@ var overlays = {
       format: "image/png",
       transparent: true
     }),
- "Norway Topo": L.tileLayer.wms(
+ "Layer Name": L.tileLayer.wms(
     "http://openwms.statkart.no/skwms1/wms.topo2?", {
       layers: "N5000Hoydelag",
       format: "image/png",
