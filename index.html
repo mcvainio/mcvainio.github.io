@@ -11,7 +11,7 @@ The goal of this collection is to provide a set of instructive examples which in
 <hr>
 Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">GitHub</a>. Main page css taken from <a class="toc" href="https://stemkoski.github.io/Three.js/">Stemkoski's</a> Three JS example page (thank you!). Last updated: 14 Dec 2022. 
 <hr>
-I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am just working on writing my thesis at the moment. I kind of assume that no one is reading this. If you are reading this though, and you would like a particular standalone example in advance - or even if you just wanna chat about how to turn a WMS into a cute 3D terrain wireframe - then follow me! Add me on whatever platform you see fit, or email me at mvainion@unb.ca. I will get back to you in <1 day.
+I aim to have all of my examples uploaded onto here by the end of Jan 2023. I am just working on writing my thesis at the moment. I kind of assume that no one is reading this. If you are reading this though, and you would like a particular standalone example in advance - or even if you just wanna chat about how to turn a WMS into a cute 3D terrain wireframe - then follow me! Add me on whatever platform you see fit, or email me at mvainion@unb.ca. I will get back to you in <1 day.
 <hr>
 	<br><br>
 <hr color="black"> <center><b><u>2D Examples</u></b></center>
@@ -21,7 +21,7 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 &bull; <a class="toc" href="#sidebar">Sidebar GUI with Inline Layer Control</a>
 	
 <hr color="black"> <center><b><u>3D Examples</u></b></center>
-&bull; <a class="toc" href="#3dplane">Plain Plane</a>
+&bull; <a class="toc" href="#3dplane">Three.js - Plain Plane</a>
 &bull; <a class="toc" href="#wcsplane">Modify Plane Elevations Using WCS</a>
 &bull; <a class="toc" href="#wmsplane">Map WMS Texture onto Surface</a>
 &bull; <a class="toc" href="#vertplane">Modify Surface Colours Using ASCII JS Array</a>
@@ -53,7 +53,7 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 <a name="spatialquery"></a>
 <a href="Infobox.html" target="_blank">
 <img src="html-images/Infobox.png" class="superImage" />
-<br/>Title</a>
+<br/>Query Spatial Selection</a>
 <p class ="superText"> Description </p>
 </div>
 
@@ -61,7 +61,7 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 <a name="sidebar"></a>
 <a href="Materials-Solid.html" target="_blank">
 <img src="html-images/Materials-Solid.png" class="superImage" />
-<br/>Materials - Solid</a>
+<br/>Sidebar GUI with Inline Layer Control</a>
 <p class ="superText"> Illustrates the difference between the Basic, Lambert, and Phong materials. </p>
 </div>
 
@@ -78,23 +78,23 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 <a name="wcsplane"></a>
 <a href="Texture-Repeat.html" target="_blank">
 <img src="html-images/Texture-Repeat.png" class="superImage" />
-<br/>Texture - Repeat</a>
-<p class ="superText"> Repeating (tiling) a texture on a surface. </p>
+<br/>Modify Plane Elevations Using WCS</a>
+<p class ="superText"> Generates a plane like the above example, but then loops through each vertex. For every point on the plane, the z value (the elevation) is changed to the corresponding value taken from a WCS that is clipped to the same size as the plane. </p>
 </div>
 
 <div class="fancy">
 <a name="wmsplane"></a>
 <a href="3d topo w wms overlay.html" target="_blank">
 <img src="https://i.imgur.com/mXRkymN.jpg" class="superImage" />
-<br/>Title</a>
-<p class ="superText"> Description </p>
+<br/>Map WMS Texture onto Surface</a>
+<p class ="superText"> Takes the wireframe from the above example & overlays an image texture taken from a WMS that is clipped to the same geographic bounds.</p>
 </div>
 
 <div class="fancy">
 <a name="vertplane"></a>
 <a href="Translucence.html" target="_blank">
 <img src="html-images/Translucence.png" class="superImage" />
-<br/>Title</a>
+<br/>Modify Surface Colours Using ASCII JS Array</a>
 <p class ="superText"> Description </p>
 </div>
 
@@ -102,7 +102,7 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 <a name="3dseabed"></a>
 <a href="Shadow.html" target="_blank">
 <img src="html-images/Shadow.png" class="superImage" />
-<br/>Title</a>
+<br/>3D Seabed (Topo and Subsurface)</a>
 <p class ="superText"> Description </p>
 </div>
 	
@@ -110,7 +110,7 @@ I aim to have all of my examples uploaded onto here by the end of Dec 2022. I am
 <a name="2dto3d"></a>
 <a href="Shadow.html" target="_blank">
 <img src="html-images/Shadow.png" class="superImage" />
-<br/>Title</a>
+<br/>Generate 3D Scene from 2D Map Selection</a>
 <p class ="superText"> Description </p>
 </div>
 
