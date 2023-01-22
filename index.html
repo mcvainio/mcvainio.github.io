@@ -22,7 +22,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 	
 <hr color="black"> <center><b><u>3D Examples</u></b></center>
 &bull; <a class="toc" href="#3dplane">Three.js - Plain Plane</a>
-&bull; <a class="toc" href="#wcsplane">Modify Plane Elevations Using WCS</a>
+&bull; <a class="toc" href="#wcsplane">Modify Surface Elevations Using WCS</a>
 &bull; <a class="toc" href="#wmsplane">Map WMS Texture onto Surface</a>
 &bull; <a class="toc" href="#vertplane">Modify Surface Colours Using ASCII JS Array</a>
 &bull; <a class="toc" href="#3dseabed">3D Seabed (Topo and Subsurface)</a>
@@ -78,7 +78,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a name="wcsplane"></a>
 <a href="Texture-Repeat.html" target="_blank">
 <img src="html-images/Texture-Repeat.png" class="superImage" />
-<br/>Modify Plane Elevations Using WCS</a>
+<br/>Modify Surface Elevations Using WCS</a>
 <p class ="superText"> Generates a plane like the above example, but then loops through each vertex. For every point on the plane, the z value (the elevation) is changed into the corresponding value taken from a WCS. </p>
 </div>
 
@@ -95,7 +95,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="Translucence.html" target="_blank">
 <img src="html-images/Translucence.png" class="superImage" />
 <br/>Modify Surface Colours Using ASCII JS Array</a>
-<p class ="superText"> Description </p>
+<p class ="superText"> Rather than overlaying an image, we now try colouring our planar surface using a text array. In particular, we are using an ASCII file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section. </p>
 </div>
 
 <div class="fancy">
@@ -103,7 +103,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="Shadow.html" target="_blank">
 <img src="html-images/Shadow.png" class="superImage" />
 <br/>3D Seabed (Topo and Subsurface)</a>
-<p class ="superText"> Description </p>
+<p class ="superText"> Combining the WCS topo with WMS overlay, alongside the cross-sectional vertical curtain data that was generated from the ASCII example above. </p>
 </div>
 	
 <div class="fancy">
@@ -111,7 +111,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="Shadow.html" target="_blank">
 <img src="html-images/Shadow.png" class="superImage" />
 <br/>Generate 3D Scene from 2D Map Selection</a>
-<p class ="superText"> Description </p>
+<p class ="superText"> Starts with a 3D seabed model like the above example. This time though, there is a 2D map alongside it. The overhead map has a lets the user change where the 3D model is generated from (changes the bbox co-ords). </p>
 </div>
 
 
