@@ -90,7 +90,7 @@ L.rectangle(bounds, {color:"#ff7800", weight:1}).addTo(map);
 
     });
 
-    var controls = new THREE.TrackballControls(camera); 
+    var controls = new THREE.TrackballControls(camera, webgl); 
 
     document.getElementById('webgl').appendChild(renderer.domElement);
 
