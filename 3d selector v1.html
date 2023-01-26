@@ -26,7 +26,7 @@
 var map = L.map('map').setView([61.5, 8], 7);
 L.esri.basemapLayer("Gray").addTo(map);
 var bnds = [[61.24,7.73], [61.78,8.85]];
-L.rectangle(bnds, {color:"#ff0000", weight:1}).addTo(map);
+var rect = L.rectangle(bnds, {color:"#ff0000", weight:1}).addTo(map);
 
 var utm = "+proj=utm +zone=32";
 var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -120,7 +120,8 @@ function setTwoCorner(e)
 twoCorner = e.latlng;    
 twoCornerrev = [e.latlng.lng, e.latlng.lat];
 var bounds = [oneCorner, twoCorner];
-L.rectangle(bounds, {color:"#ff7800", weight:1}).addTo(map);
+map.removeLayer(rect);
+rect = L.rectangle(bounds, {color:"#ff7800", weight:1}).addTo(map);
 //bbox coords curently in latlng. need to get into UTM 32 to match our WCS' chosen coord system
 convert2 = transformer.forward(twoCornerrev);
 lnground2 = Math.round((convert2[0])/1000)*1000;
