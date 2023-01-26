@@ -70,7 +70,7 @@ wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST
         var geometry = new THREE.PlaneGeometry(60, 60, 199, 199);
 
         for (var i = 0, l = geometry.vertices.length; i < l; i++) {
-            geometry.vertices[i].z = data[i] / 500;
+            geometry.vertices[i].z = data[i] / 300;
         }
 
         var material = new THREE.MeshPhongMaterial({
@@ -82,6 +82,7 @@ wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST
         var plane = new THREE.Mesh(geometry, material);
     scene.add(new THREE.AxisHelper(100));
         scene.add(plane);
+	plane.rotateZ(THREE.Math.degToRad(180))
     });
 }
 
