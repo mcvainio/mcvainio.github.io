@@ -78,6 +78,7 @@ wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST
         });
 
         var plane = new THREE.Mesh(geometry, material);
+	scene.add(new THREE.AxisHelper(100));
         scene.add(plane);
     });
 }
