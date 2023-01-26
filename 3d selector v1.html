@@ -23,16 +23,10 @@
 
 <script>
 //render map panel first
-var map = L.map('map').setView([61.5, 8.29], 9);
+var map = L.map('map').setView([61.5, 8], 7);
 L.esri.basemapLayer("Gray").addTo(map);
-
-//mouse click listener on up & downclick to form bbox
-//map.on('click', onMapClick);
-//function onMapClick(e) {
-//	lat1 = e.latlng.lat
-//	lng1 = e.latlng.lng
-//   alert("You clicked the map at " + lat1 + ", " + lng1);
-//}
+var bnds = [[61.24,7.73], [61.78,8.85]];
+L.rectangle(bnds, {color:"#ff0000", weight:1}).addTo(map);
 
 var utm = "+proj=utm +zone=32";
 var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -44,45 +38,14 @@ var twoCorner;
 var twoCornerrev;
 var convert1;
 var convert2;
+var wcsUrl;
 var bbox;
-
-map.on('mousedown', setOneCorner);
-map.on('mouseup', setTwoCorner);
-
-
-function setOneCorner(e)
-{
-map.dragging.disable();
-oneCorner = e.latlng;
-oneCornerrev = [e.latlng.lng, e.latlng.lat];
-convert1 = transformer.forward(oneCornerrev);
-lnground1 = Math.round(convert1[0])
-latround1 = Math.round(convert1[1])
-} 
-
-function setTwoCorner(e)
-{
-twoCorner = e.latlng;    
-twoCornerrev = [e.latlng.lng, e.latlng.lat];
-var bounds = [oneCorner, twoCorner];
-L.rectangle(bounds, {color:"#ff7800", weight:1}).addTo(map);
-//bbox coords curently in latlng. need to get into UTM 32 to match our WCS' chosen coord system
-convert2 = transformer.forward(oneCornerrev);
-lnground2 = Math.round(convert2[0])
-latround2 = Math.round(convert2[1])
-bbox = [lnground1, latround1, lnground2, latround2];
-alert("You clicked the map at " + bbox);
-render();
-}
-
 
 //render 3D viewer
     var width  = window.innerWidth,
         height = window.innerHeight,
 //must change our latlng coords into utm 32
-        bbox   = '432000,6790000,492000,6850000',
-        wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&FORMAT=XYZ&COVERAGE=land_utm33_10m&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=200&HEIGHT=200',
-        wmsUrl = '//openwms.statkart.no/skwms1/wms.topo2?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=2048&HEIGHT=2048&LAYERS=' + layers + '&FORMAT=image/png';        
+        wmsUrl = 'ows.emodnet-bathymetry.eu/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=2048&HEIGHT=2048&LAYERS=mean_atlas_land&FORMAT=image/png';        
 
     var scene = new THREE.Scene();
     scene.add(new THREE.AmbientLight(0xeeeeee));
@@ -93,6 +56,12 @@ render();
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(width, height);
 
+function init(bbox) {
+while(scene.children.length > 0){ 
+    scene.remove(scene.children[0]); 
+}
+wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&FORMAT=XYZ&COVERAGE=land_utm33_50m&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=200&HEIGHT=200';
+
     var terrainLoader = new THREE.WcsTerrainLoader();
     terrainLoader.load(wcsUrl, function(data) {
 
@@ -102,28 +71,61 @@ render();
             geometry.vertices[i].z = data[i] / 500;
         }
 
-        var material = new THREE.MeshBasicMaterial({
-//            map: THREE.ImageUtils.loadTexture(wmsUrl),
+        var material = new THREE.MeshPhongMaterial({
+            map: THREE.ImageUtils.loadTexture(wmsUrl),
 		color: 0x36454F,
 		wireframe: true
         });
 
         var plane = new THREE.Mesh(geometry, material);
         scene.add(plane);
-
     });
+}
 
-    var controls = new THREE.TrackballControls(camera, webgl); 
+var controls = new THREE.TrackballControls(camera, webgl); 
+document.getElementById('webgl').appendChild(renderer.domElement);
 
-    document.getElementById('webgl').appendChild(renderer.domElement);
+init([432000,6790000,492000,6850000]);
+render();
 
-    render();
+
 
     function render() {
         controls.update();    
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
+
+
+//add in click listener to create rectangle on map & pass on co-ords to the 3d viewer's bbox
+map.on('mousedown', setOneCorner);
+map.on('mouseup', setTwoCorner);
+
+
+function setOneCorner(e)
+{
+map.dragging.disable();
+oneCorner = e.latlng;
+oneCornerrev = [e.latlng.lng, e.latlng.lat];
+convert1 = transformer.forward(oneCornerrev);
+lnground1 = Math.round((convert1[0])/1000)*1000;
+latround1 = Math.round((convert1[1])/1000)*1000;
+} 
+
+function setTwoCorner(e)
+{
+twoCorner = e.latlng;    
+twoCornerrev = [e.latlng.lng, e.latlng.lat];
+var bounds = [oneCorner, twoCorner];
+L.rectangle(bounds, {color:"#ff7800", weight:1}).addTo(map);
+//bbox coords curently in latlng. need to get into UTM 32 to match our WCS' chosen coord system
+convert2 = transformer.forward(twoCornerrev);
+lnground2 = Math.round((convert2[0])/1000)*1000;
+latround2 = Math.round((convert2[1])/1000)*1000;
+bbox1 = [[lnground1,latround1],[lnground2,latround2]];
+init(bbox1);
+}
+
 
 </script>
 </body>
