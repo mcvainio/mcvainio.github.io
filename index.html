@@ -16,7 +16,8 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 	<br><br>
 <hr color="black"> <center><b><u>2D Examples (Leaflet)</u></b></center>
 &bull; <a class="toc" href="#displaywms">Display Third-Party WMS</a>
-&bull; <a class="toc" href="#singleiho">Query Third-Party WMS</a>
+&bull; <a class="toc" href="#singleiho">Query Third-Party WMS (ESRI Server)</a>
+&bull; <a class="toc" href="#singleemod">Query Third-Party WMS (Other Server)</a>
 &bull; <a class="toc" href="#spatialquery">Query Spatial Selection</a>
 &bull; <a class="toc" href="#spatialquery2">Spatial Query Extended</a>
 &bull; <a class="toc" href="#sidebar">Sidebar GUI with Inline Layer Control</a>
@@ -28,7 +29,6 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 &bull; <a class="toc" href="#vertplane">Modify Surface Colours Using ASCII JS Array</a>
 &bull; <a class="toc" href="#3dseabed">3D Seabed (Topo and Subsurface)</a>
 &bull; <a class="toc" href="#2dto3d">Generate 3D Scene from 2D Map Selection</a>
-
 
 &bull;
 <hr/>
@@ -47,7 +47,15 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="single-iho-query.html" target="_blank">
 <img src="https://i.imgur.com/JW3DApc.png" class="superImage" />
 <br/>Query Third-Party WMS</a>
-<p class ="superText"> Uses a click listener on a Leaflet map to grab a user-selected co-ordinate. Then, fires a single query at a geoserver using that co-ord. The result (the depth property of the WMS) is displayed in an inline window on the map.</p>
+<p class ="superText"> Uses a click listener on a Leaflet map to grab a user-selected co-ordinate. Then, fires a single query at an ESRI geoserver using that co-ord. The result (the depth property of the WMS) is displayed in an inline window on the map.</p>
+</div>
+	
+<div class="fancy">
+<a name="singleemod"></a>
+<a href="query-single-emod.html" target="_blank">
+<img src="https://i.imgur.com/JW3DApc.png" class="superImage" />
+<br/>Query Third-Party WMS</a>
+<p class ="superText"> Same as above, but queries a general open geoserver rather than an ESRI-specific one.</p>
 </div>
 
 <div class="fancy">
