@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<title>WMS GetFeatureInfo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+<style>
+    body { margin: 0; overflow: hidden; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; width:100%}
+  #pixelValue {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+  }
+</style>
+</head>
+
+
+<body>
+<div id="map"></div>
+<div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/js/QueryFunction.js"></script>
+
+
+    
+
+<script>
+      var map = L.map('map', {
+        center: [60,10],
+        zoom: 5
+      });
+      
+L.esri.basemapLayer("Gray").addTo(map);
+var url = 'http://ows.emodnet-bathymetry.eu/ows?';
+var pane = document.getElementById('pixelValue');
+var obj2;
+
+
+      L.tileLayer.betterWms(url, {
+        layers: 'emodnet:mean_2016',
+        transparent: true,
+        format: 'image/png'
+      }).addTo(map);
+
+</script>
+</body>
+</html>
