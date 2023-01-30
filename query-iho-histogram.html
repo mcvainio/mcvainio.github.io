@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+<head>
+<title>Bathymetry Histogram from WMS</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+<style>
+    body { margin: 0; overflow: hidden; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; width:60%; }
+    #right { position: absolute; right:0; width:40%; height:100%; overflow: auto; text-align: center; }
+    #barholder { position: absolute; top: 20%; left: 5%; width: 90%; text-align: center; }
+</style>
+</head>
+
+
+<body>
+<div id="map"></div>
+<div id="right"><div id ="barholder">
+<canvas id="barChart"></canvas>
+</div></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.8/esri-leaflet.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+    
+
+
+<script>
+      var map = L.map('map', {
+        center: [71,-135],
+        zoom: 7
+      });
+      
+L.esri.basemapLayer("Gray").addTo(map);
+
+  var renderingRule = {
+  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0"
+  };
+  var hillshade = L.esri.imageMapLayer({
+    url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    renderingRule: renderingRule,
+    useCors: false
+  }).addTo(map);
+
+
+var identifiedPixel;
+var right = document.getElementById('right');
+
+//click behaviour on map
+//refreshes histogram using data in bbox as input
+map.addEventListener('click', function (e)  {
+	map.removeLayer(sqrLyr);
+	var center = [e.latlng.lng, e.latlng.lat];
+	var centerround = [Number(Math.round((e.latlng.lng)+'e2')+'e-2'), Number(Math.round((e.latlng.lat)+'e2')+'e-2')];	
+	drawsqr(center);
+    if (identifiedPixel) {
+      right.innerHTML = 'Loading';
+    }
+    hillshade.identify().at(e.latlng).run(function (error, results) {
+      if (error) {
+        return;
+      }
+	chartConfig.data.datasets[0].data = [lessthanhundo, btwn1, btwn2, btwn3, btwn4, grtr];
+	barChart.update();
+    });
+  });
+
+
+function drawsqr(lngLat){
+				var bbox = [lngLat[0]+0.1, lngLat[1]+0.03, lngLat[0]-0.1, lngLat[1]-0.03];
+				const sqr = turf.bboxPolygon(bbox);
+
+
+				sqrLyr = L.geoJson(sqr, {
+					style: {
+						color: 'yellow',
+						weight: 0.5,
+						opacity: 0.6,
+						fillColor: '#ff7800',
+						fillOpacity: 0.3,
+					}
+				});
+sqrLyr.addTo(map);
+getmean(sqrLyr);
+};
+drawsqr([-135,71]);
+
+
+//initialize histogram
+let chartConfig = {
+    type: 'bar',
+    data: {
+        labels: ['<100m','100m-250m','250m-500m','500m-750m','750m-1km','>1km'],
+        datasets: [{
+	    label: 'Pings within range',
+            data: [55.39, 69.55, 71.30, 82.91, 73.43, 68.32],
+            backgroundColor: [
+                'rgba(204, 224, 255, 0.6)',
+                'rgba(164, 194, 242, 0.6)',
+                'rgba(95, 138, 207, 0.6)',
+                'rgba(21, 78, 171, 0.6)',
+                'rgba(8, 55, 130, 0.6)',
+                'rgba(0, 21, 51, 0.6)',
+           ],
+            borderColor: [
+                'rgba(204, 224, 255, 1)',
+                'rgba(164, 194, 242, 1)',
+                'rgba(95, 138, 207, 1)',
+                'rgba(21, 78, 171, 1)',
+                'rgba(8, 55, 130, 1)',
+                'rgba(0, 21, 51, 1)',
+           ],
+            borderWidth: 1,
+	    barPercentage: 1.0,
+	    categoryPercentage: 1.0,
+        }]
+    },
+    options: {
+	plugins: {
+		legend: false,
+		title: {
+			display: true,
+			text: 'Depth Histogram'
+			},
+},
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+};
+var vtx = document.getElementById('barChart').getContext('2d');
+var barChart = new Chart(vtx, chartConfig); 
+
+
+
+//define a bunch of variables for click listener later so they can be called on globally
+var circleLyr;
+var identifiedPixel;
+var yup;
+var lessthanhundo;
+var btwn1;
+var btwn2;
+var btwn3;
+var btwn4;
+var grtr;
+var num;
+var meanPixel;
+var woop;
+var points;
+
+function getmean(circ){
+var points = [];
+for (let x = circ.getBounds().getWest(); x <= circ.getBounds().getEast(); x += 0.02) {
+	for (let y = circ.getBounds().getSouth(); y <= circ.getBounds().getNorth(); y += 0.02){
+		hillshade.identify().at([y,x]).run(function (error, meanPixel) {
+			if (error) {
+			return;
+			}
+		var woop = meanPixel.pixel;
+		var test = Number(woop.properties.value);
+		if(isNaN(test)) {
+		return;
+		} else {
+		points.push(test);
+		}
+    var sum = 0;
+    var lessthan = 0;
+    var btwnfirst = 0;
+    var btwnscnd = 0;
+    var btwnthrd = 0;
+    var btwnfrth = 0;
+    var grter = 0;
+    var m = points.length;
+    for (let i = 0; i < m; i++) {
+        sum += parseFloat(points[i]);
+	if (points[i] > -100) {
+        	lessthan += 1;
+		}
+	else if (-250 < points[i] && points[i] <= -100) {
+        	btwnfirst += 1;
+		}
+	else if (-500 < points[i] && points[i] <= -250) {
+        	btwnscnd += 1;
+		}
+	else if (-750 < points[i] && points[i] <= -500) {
+        	btwnthrd += 1;
+		}
+	else if (-1000 < points[i] && points[i] <= -750) {
+        	btwnfrth += 1;
+		}
+	else if (points[i] <= -1000) {
+        	grter += 1;
+		}
+    num = m;
+	}
+ //the e2 and e-2 specify the number of decimals to return
+    yup = Number(Math.round(sum / m+'e2')+'e-2');
+    lessthanhundo = Number(Math.round((lessthan / m)*100+'e2')+'e-2');
+    btwn1 = Number(Math.round((btwnfirst / m)*100+'e2')+'e-2');
+    btwn2 = Number(Math.round((btwnscnd / m)*100+'e2')+'e-2');
+    btwn3 = Number(Math.round((btwnthrd / m)*100+'e2')+'e-2');
+    btwn4 = Number(Math.round((btwnfrth / m)*100+'e2')+'e-2');
+    grtr = Number(Math.round((grter / m)*100+'e2')+'e-2');
+	point = points;
+		});
+	}
+}    
+};
+
+</script>
+</body>
+</html>
