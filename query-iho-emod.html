@@ -16,12 +16,14 @@
     background: white;
     padding: 1em;
   }
+#no {}
 </style>
 </head>
 
 
 <body>
 <div id="map"></div>
+<div id="no"></div>
 <div id="pixelValue" class="leaflet-bar">Click map for percent diff between layers</div>
 
 <link rel="stylesheet" href="/css/leaflet.css" />
@@ -42,7 +44,7 @@
 L.esri.basemapLayer("Gray").addTo(map);
 var url = '//ows.emodnet-bathymetry.eu/ows?';
 var panel = document.getElementById('pixelValue');
-var pane;
+var pane = document.getElementById('no');
 var obj2;
 
 var layer1 = L.tileLayer.betterWms(url, {
