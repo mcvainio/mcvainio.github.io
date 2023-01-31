@@ -17,6 +17,12 @@ body
 	text-align: left;               /* left, right, center, justify */
 }
 
+.mainpage
+{
+	background-color: #eeeeee;
+
+}
+
 .fancy
 {
 	min-height: 150px;
