@@ -23,7 +23,7 @@ body
 .mainpage
 {
 	background-color: #eeeeee;
-	margin: 5% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
+	margin: 2% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
 	height: 100%
 	/* really nifty translucence */
 	background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.8) );
@@ -33,7 +33,7 @@ body
 	-moz-border-radius: 15px 15px 15px 15px;
 	-webkit-border-radius: 15px 15px 15px 15px;
 	border-radius: 15px 15px 15px 15px;
-	text-indent: 5px;
+	text-indent: 6px;
 }
 
 .fancy
