@@ -24,8 +24,6 @@ body
 	background-color: #eeeeee;
 	margin: 5% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
 	height: 100%
-	background: -moz-linear-gradient(top, #ffffff, #cccccc);
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cccccc));
 	/* really nifty translucence */
 	background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.8) );
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from( rgba(255, 255, 255, 0.8) ), to( rgba(200, 200, 200, 0.8) ));
