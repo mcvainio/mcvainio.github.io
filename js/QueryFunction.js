@@ -23,7 +23,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
       success: function (data, status, xhr) {
         var err = typeof data === 'string' ? null : data;
 	var obj = JSON.parse(data.features[0].properties.GRAY_INDEX);
-	var obj2 = Math.round(obj);
+ obj2 = Math.round(obj);
 	pane.innerHTML = obj2 + 'm'; 
         showResults(err, evt.latlng, data);
       },
