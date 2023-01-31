@@ -6,7 +6,8 @@ body
 	background-attachment: fixed;   /* scroll, fixed */
 	background-position: top left;  /* for no-repeat setting: top/bottom, left/right */
 	margin: 0% 0% 0% 0%;            /* top, left, bottom, right or TRBL */
-	height: 100%
+	height: 100%;
+	width: 100%;
 	
 	font-family: Georgia, Serif;	/* list font names in order of preference */
 	font-weight: normal;            /* normal, bold */
@@ -21,7 +22,18 @@ body
 .mainpage
 {
 	background-color: #eeeeee;
-
+	margin: 5% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
+	height: 100%
+	background: -moz-linear-gradient(top, #ffffff, #cccccc);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cccccc));
+	/* really nifty translucence */
+	background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.8) );
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from( rgba(255, 255, 255, 0.8) ), to( rgba(200, 200, 200, 0.8) ));
+	
+	/* Rounded corners */
+	-moz-border-radius: 15px 15px 15px 15px;
+	-webkit-border-radius: 15px 15px 15px 15px;
+	border-radius: 15px 15px 15px 15px;
 }
 
 .fancy
@@ -87,6 +99,7 @@ a:hover
 a .superImage
 {  
 	height: 148px;
+	width: 300px;
 	border: 1px solid #000000;
 	margin: 0px 20px 0px 0px;
 	float:left;
