@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<title>WMS GetFeatureInfo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+<style>
+    body { margin: 0; overflow: hidden; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; width:100%}
+  #pixelValue {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+  }
+</style>
+</head>
+
+
+<body>
+<div id="map"></div>
+<div id="pixelValue" class="leaflet-bar">Click map for percent diff between layers</div>
+
+<link rel="stylesheet" href="/css/leaflet.css" />
+<script src="/js/leaflet.js"></script>
+<script src="/js/esri-leaflet.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/js/QueryFunction.js"></script>
+
+
+    
+
+<script>
+      var map = L.map('map', {
+        center: [60,10],
+        zoom: 5
+      });
+      
+L.esri.basemapLayer("Gray").addTo(map);
+var url = '//ows.emodnet-bathymetry.eu/ows?';
+var panel = document.getElementById('pixelValue');
+var obj2;
+
+var layer1 = L.tileLayer.betterWms(url, {
+        layers: 'emodnet:mean_2016',
+        transparent: true,
+        format: 'image/png'
+      });
+layer1.addTo(map);
+
+  var renderingRule = {
+  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0"
+  };
+  var hillshade = L.esri.imageMapLayer({
+    url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    renderingRule: renderingRule,
+    useCors: false
+  }).addTo(map);
+
+
+var identifiedPixel;
+var right = document.getElementById('right');
+
+map.addEventListener('click', function (e)  {
+    if (identifiedPixel) {
+      panel.innerHTML = 'Loading';
+    }
+    hillshade.identify().at(e.latlng).run(function (error, results) {
+      if (error) {
+        return;
+      }
+
+      identifiedPixel = results.pixel;
+	iho = Math.round(Math.abs(identifiedPixel.properties.value));
+	percdiff = Number(Math.round((((iho-obj2)/iho)*100)+'e2')+'e-2')
+      panel.innerHTML = 'IHO Depth: ' + iho + 'm<br>EMOD Depth: ' + obj2 + 'm<br>Percent Difference: ' + percdiff + '%';
+    });
+  });
+
+
+
+</script>
+</body>
+</html>
