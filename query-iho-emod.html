@@ -44,46 +44,87 @@
 L.esri.basemapLayer("Gray").addTo(map);
 var url = '//ows.emodnet-bathymetry.eu/ows?';
 var panel = document.getElementById('pixelValue');
-var pane = document.getElementById('no');
-var obj2;
+var emod;
 
-var layer1 = L.tileLayer.betterWms(url, {
+var emodlyr = L.tileLayer.wms(url, {
         layers: 'emodnet:mean_2016',
         transparent: true,
         format: 'image/png'
-      });
-layer1.addTo(map);
+      }).addTo(map);
 
-  var renderingRule = {
+var renderingRule = {
   "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0"
   };
-  var hillshade = L.esri.imageMapLayer({
+var iholyr = L.esri.imageMapLayer({
     url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
     renderingRule: renderingRule,
     useCors: false
   }).addTo(map);
 
-
 var identifiedPixel;
-var right = document.getElementById('right');
+var iho;
+var percdiff;
 
 map.addEventListener('click', function (e)  {
     if (identifiedPixel) {
       panel.innerHTML = 'Loading';
     }
-    hillshade.identify().at(e.latlng).run(function (error, results) {
+	getFeatureInfo(e);
+    iholyr.identify().at(e.latlng).run(function (error, results) {
       if (error) {
         return;
       }
-
       identifiedPixel = results.pixel;
 	iho = Math.round(Math.abs(identifiedPixel.properties.value));
-	percdiff = Number(Math.round((((iho-obj2)/iho)*100)+'e2')+'e-2')
-      panel.innerHTML = 'IHO Depth: ' + iho + 'm<br>EMOD Depth: ' + obj2 + 'm<br>Percent Difference: ' + percdiff + '%';
+	percdiff = Number(Math.round((((iho-emod)/iho)*100)+'e2')+'e-2')
+      panel.innerHTML = 'IHO Depth: ' + iho + 'm<br>EMOD Depth: ' + emod + 'm<br>Percent Difference: ' + percdiff + '%';
     });
   });
 
 
+
+function getFeatureInfo(evt) {
+    // Make an AJAX request to the server and hope for the best
+    var url = this.getFeatureInfoUrl(evt.latlng),
+        showResults = L.Util.bind(this);
+    $.ajax({
+      url: url,
+      success: function (data, status, xhr) {
+        var err = typeof data === 'string' ? null : data;
+	  var obj = JSON.parse(data.features[0].properties.GRAY_INDEX);
+	  emod = Math.round(obj);
+      },
+      error: function (xhr, status, error) {
+        console.log(error); return;;  
+      }
+    });
+  }
+function getFeatureInfoUrl(latlng) {
+    // Construct a GetFeatureInfo request URL given a point
+    var point = map.latLngToContainerPoint(latlng, map.getZoom()),
+        size = map.getSize(),
+        
+        params = {
+          request: 'GetFeatureInfo',
+          service: 'WMS',
+          srs: 'EPSG:4326',
+          styles: emodlyr.wmsParams.styles,
+          transparent: emodlyr.wmsParams.transparent,
+          version: emodlyr.wmsParams.version,      
+          format: emodlyr.wmsParams.format,
+          bbox: map.getBounds().toBBoxString(),
+          height: size.y,
+          width: size.x,
+          layers: emodlyr.wmsParams.layers,
+          query_layers: emodlyr.wmsParams.layers,
+          info_format: 'application/json'
+        };
+    
+    params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+    params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+    
+    return url + L.Util.getParamString(params, url, true);
+  }
 
 </script>
 </body>
