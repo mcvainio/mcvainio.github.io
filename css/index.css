@@ -1,8 +1,8 @@
 body 
 {
 	background-color: #87f6fa;
-	background-image: url("../html-images/white-pixels.png");
-	background-repeat: repeat;      /* repeat, no-repeat */
+	background-image: url("//i.ytimg.com/vi/9-3dl8prWRc/maxresdefault.jpg");
+	background-repeat: no-repeat;      /* repeat, no-repeat */
 	background-attachment: fixed;   /* scroll, fixed */
 	background-position: top left;  /* for no-repeat setting: top/bottom, left/right */
 	margin: 2% 5% 0% 5%;            /* top, left, bottom, right or TRBL */
