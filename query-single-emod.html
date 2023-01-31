@@ -28,8 +28,6 @@
 <link rel="stylesheet" href="/css/leaflet.css" />
 <script src="/js/leaflet.js"></script>
 <script src="/js/esri-leaflet.js"></script>
-    <script src="/js/QueryFunction.js"></script>
-
 
     
 
@@ -40,17 +38,66 @@
       });
       
 L.esri.basemapLayer("Gray").addTo(map);
-var url = '//ows.emodnet-bathymetry.eu/ows?';
+var url = 'http://ows.emodnet-bathymetry.eu/ows?';
 var pane = document.getElementById('pixelValue');
-var obj2;
+var emod;
 
 
-      L.tileLayer.betterWms(url, {
+layer1 = L.tileLayer.wms(url, {
         layers: 'emodnet:mean_2016',
         transparent: true,
         format: 'image/png'
       }).addTo(map);
-  
+
+map.addEventListener('click', function (e)  {
+	getFeatureInfo(e);
+      pane.innerHTML = 'Depth: ' + emod + 'm';
+  });
+    
+
+
+function getFeatureInfo(evt) {
+    // Make an AJAX request to the server and hope for the best
+    var url = this.getFeatureInfoUrl(evt.latlng),
+    showResults = L.Util.bind(this);
+    $.ajax({
+      url: url,
+      success: function (data, status, xhr) {
+        var err = typeof data === 'string' ? null : data;
+	var obj = JSON.parse(data.features[0].properties.GRAY_INDEX);
+	emod = Math.round(obj);
+      },
+      error: function (xhr, status, error) {
+        console.log(error); return;;  
+      }
+    });
+  }
+function getFeatureInfoUrl(latlng) {
+    // Construct a GetFeatureInfo request URL given a point
+    var point = map.latLngToContainerPoint(latlng, map.getZoom()),
+        size = map.getSize(),
+        
+        params = {
+          request: 'GetFeatureInfo',
+          service: 'WMS',
+          srs: 'EPSG:4326',
+          styles: layer1.wmsParams.styles,
+          transparent: layer1.wmsParams.transparent,
+          version: layer1.wmsParams.version,      
+          format: layer1.wmsParams.format,
+          bbox: map.getBounds().toBBoxString(),
+          height: size.y,
+          width: size.x,
+          layers: layer1.wmsParams.layers,
+          query_layers: layer1.wmsParams.layers,
+          info_format: 'application/json'
+        };
+    
+    params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
+    params[params.version === '1.3.0' ? 'j' : 'y'] = point.y;
+    
+    return url + L.Util.getParamString(params, url, true);
+  }
 </script>
 </body>
 </html>
