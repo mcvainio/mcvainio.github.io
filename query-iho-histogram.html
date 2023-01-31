@@ -7,16 +7,25 @@
 
 <style>
     body { margin: 0; overflow: hidden; }
-    #map { position: absolute; top:0; bottom:0; right:0; left:0; width:60%; }
-    #right { position: absolute; right:0; width:40%; height:100%; overflow: auto; text-align: center; }
-    #barholder { position: absolute; top: 20%; left: 5%; width: 90%; text-align: center; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; width:100%; }
+    #barholder { position: absolute; top: 0%; left: 5%; width: 90%; text-align: center; }
+  #pixelValue {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+	width: 33%;
+	height: 30%;
+  }
 </style>
 </head>
 
 
 <body>
 <div id="map"></div>
-<div id="right"><div id ="barholder">
+<div id="pixelValue" class="leaflet-bar"><div id ="barholder">
 <canvas id="barChart"></canvas>
 </div></div>
 
@@ -48,7 +57,7 @@ L.esri.basemapLayer("Gray").addTo(map);
 
 
 var identifiedPixel;
-var right = document.getElementById('right');
+var pane = document.getElementById('pixelValue');
 
 //click behaviour on map
 //refreshes histogram using data in bbox as input
@@ -58,7 +67,7 @@ map.addEventListener('click', function (e)  {
 	var centerround = [Number(Math.round((e.latlng.lng)+'e2')+'e-2'), Number(Math.round((e.latlng.lat)+'e2')+'e-2')];	
 	drawsqr(center);
     if (identifiedPixel) {
-      right.innerHTML = 'Loading';
+      pane.innerHTML = 'Loading';
     }
     hillshade.identify().at(e.latlng).run(function (error, results) {
       if (error) {
