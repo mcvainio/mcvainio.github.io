@@ -51,7 +51,6 @@ layer1 = L.tileLayer.wms(url, {
 
 map.addEventListener('click', function (e)  {
 	getFeatureInfo(e);
-      pane.innerHTML = 'Depth: ' + emod + 'm';
   });
     
 
@@ -66,6 +65,7 @@ function getFeatureInfo(evt) {
         var err = typeof data === 'string' ? null : data;
 	var obj = JSON.parse(data.features[0].properties.GRAY_INDEX);
 	emod = Math.round(obj);
+	pane.innerHTML = 'Depth: ' + emod + 'm';
       },
       error: function (xhr, status, error) {
         console.log(error); return;;  
