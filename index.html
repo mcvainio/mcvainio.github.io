@@ -41,10 +41,10 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 	
 <div class="fancy">
 <a name="basicmap"></a>
-<a href="basicmap.html" target="_blank">
-<img src="img.png" class="superImage" />
+<a href="https://leafletjs.com/examples/quick-start/example.html" target="_blank">
+<img src="https://i.imgur.com/rixZW6F.jpg" class="superImage" />
 <br/>Leaflet Basics</a>
-<p class ="superText"> A Leaflet map that shows how to display a marker, a shape, a geoJSON polygon, and a layer control bar with basemaps and overlay maps.
+<p class ="superText"> Leaflet 101 example taken from their quickstart guide. Shows how to display a marker, a shape and a polygon.
 </p>
 </div>
 	
@@ -62,7 +62,7 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="query-iho.html" target="_blank">
 <img src="https://i.imgur.com/JW3DApc.png" class="superImage" />
 <br/>Query Third-Party WMS</a>
-<p class ="superText"> Uses a click listener on a Leaflet map to grab a user-selected co-ordinate. Then, fires a single query at an ESRI geoserver using that co-ord. The result (the depth property of the WMS) is displayed in an inline window on the map.</p>
+<p class ="superText"> WMS used: Bathymetry data from the IHO. <br> Uses a click listener on a Leaflet map to grab a user-selected co-ordinate. Then, fires a single GetFeatureInfo query at the IHO's ESRI geoserver using that co-ord. The result (the depth property of the WMS) is displayed in an inline window on the map.</p>
 </div>
 	
 <div class="fancy">
@@ -70,12 +70,12 @@ I aim to have all of my examples uploaded onto here by the end of Feb 2023. I am
 <a href="query-single-emod.html" target="_blank">
 <img src="https://imgur.com/4GkabO5.jpg" class="superImage" />
 <br/>Query Third-Party WMS pt2</a>
-<p class ="superText"> Same as above, but queries a general open geoserver rather than an ESRI-specific one. The previous example employed a plug-in specifically for handling ESRI requests. The current example employs jQuery instead.</p>
+<p class ="superText"> WMS used: EMOD bathymetry. <br> Same as above, but queries a general open geoserver rather than an ESRI-specific one. The previous example employed a plug-in designed specifically for handling ESRI requests. The current example employs jQuery instead to manually create an XMLHttpRequest.</p>
 </div>
 
 <div class="fancy">
 <a name="spatialquery"></a>
-<a href="query_iho_histogram.html" target="_blank">
+<a href="query-iho-histogram.html" target="_blank">
 <img src="https://i.imgur.com/aJqxvH4.jpg" class="superImage" />
 <br/>Query Spatial Selection</a>
 <p class ="superText"> Uses a rectangle on the map as the areal selection bounds (bbox) for performing multiple queries. The output results of those queries are stored in a JS array & assigned a variable. That array variable is then used as input to generate a histogram, which is displayed in a div to the side of the map using the Chart.JS plug-in. </p>
