@@ -23,7 +23,7 @@ body
 .mainpage
 {
 	background-color: #eeeeee;
-	margin: 2% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
+	margin: 0% 10% 5% 10%;            /* top, left, bottom, right or TRBL */
 	height: 100%
 	/* really nifty translucence */
 	background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.8) );
