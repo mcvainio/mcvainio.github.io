@@ -6,6 +6,7 @@ body
 	background-attachment: fixed;   /* scroll, fixed */
 	background-position: top left;  /* for no-repeat setting: top/bottom, left/right */
 	margin: 0% 0% 0% 0%;            /* top, left, bottom, right or TRBL */
+	height: 100%
 	
 	font-family: Georgia, Serif;	/* list font names in order of preference */
 	font-weight: normal;            /* normal, bold */
