@@ -76,12 +76,9 @@ var overlays = {
       format: "image/png",
       transparent: true
     }),
- "Layer Name": L.tileLayer.wms(
-    "http://openwms.statkart.no/skwms1/wms.topo2?", {
-      layers: "N5000Hoydelag",
-      format: "image/png",
-      transparent: true
-    }),
+  "UNB Arctic BaseMaps Data": L.tileLayer(
+    "http://www.omg.unb.ca/~jmuggah/Bathy/{x}_{y}_{z}", {
+  }),
 };
 
 var layerControl = L.control
