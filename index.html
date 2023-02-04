@@ -26,7 +26,8 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 &bull; <a class="toc" href="#singleiho">Query Third-Party WMS (ESRI Server)</a>
 &bull; <a class="toc" href="#singleemod">Query Third-Party WMS (Other Server)</a>
 &bull; <a class="toc" href="#spatialquery">Query Spatial Selection</a>
-&bull; <a class="toc" href="#spatialquery2">Spatial Query Extended</a>
+&bull; <a class="toc" href="#spatialquery2">Spatial Query - 2 Layers</a>
+&bull; <a class="toc" href="#spatialquery3">Spatial Query Extended</a>
 &bull; <a class="toc" href="#sidebar">Sidebar GUI with Inline Layer Control</a>
 	<br>
 <hr color="black"> <center><b><u>3D Modelling Examples (Three.js)</u></b></center>
@@ -87,9 +88,17 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <br/>Query Spatial Selection</a>
 <p class ="superText"> Uses a rectangle on the map as the areal selection bounds (bbox) for performing multiple queries. The output results of those queries are stored in a JS array & assigned a variable. That array variable is then used as input to generate a histogram, which is displayed in a div to the side of the map using the Chart.JS plug-in. </p>
 </div>
-	
+
 <div class="fancy">
 <a name="spatialquery2"></a>
+<a href="query-iho-histogram.html" target="_blank">
+<img src="https://i.imgur.com/1xUgzZG.jpg" class="superImage" />
+<br/>Spatial Query - 2 Layers</a>
+<p class ="superText"> Uses the same method as the above example, but captures results from 2 bathymetric WMS layers (the IHO one and the EMOD one). The Chart.JS plug-in is used to generate a venn diagram showing how much of the data falls under an "acceptable" percent difference (<5%). </p>
+</div>
+	
+<div class="fancy">
+<a name="spatialquery3"></a>
 <a href="qaqc-window.html" target="_blank">
 <img src="https://i.imgur.com/OubuNMA.jpg" class="superImage" />
 <br/>Spatial Query Extended - Statistical Analysis</a>
