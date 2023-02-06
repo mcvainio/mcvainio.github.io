@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>ArcticNet Basemap & Stripmap Viewer</title>
+  <link rel="icon" href="https://imgur.com/2tWGqen.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- plugins -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0-beta.1/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/esri-leaflet/3.0.7/esri-leaflet.js"></script>
+<script src="https://cdnjs.com/libraries/Turf.js/0.0.124.turf.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.1.1/js/leaflet-sidebar.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src='https://cdn.plot.ly/plotly-2.9.0.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+
+
+<!-- stylesheets & icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.1.1/css/leaflet-sidebar.min.css"><link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.css">
+
+</head>
+
+
+<style>
+body {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body,
+#map {
+  height: 100%;
+  font-family: "Arial", sans-serif;
+}
+
+/* Leaflet Layers Control */
+
+.leaflet-control-layers {
+  border-radius: none;
+  box-shadow: none;
+}
+
+.leaflet-control-layers-expanded {
+  width: 100% !important;
+  padding: 0px;
+  background-color: transparent;
+  border: none !important;
+}
+
+#layercontrol {
+  display: inline-block;
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-filter: hue-rotate(10deg);
+}
+
+#layercontrol .title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#pie-holder {
+		width: 350px;
+		height: 100%;
+		float: left;
+		display: none;
+
+			}
+#bar-holder {
+		width: 350px;
+		height: 100%;
+		float: left;
+		display: none;
+
+			}
+#scatter-holder {
+		width: 350px;
+		height: 100%;
+		float: left;
+		display: none;
+
+			}
+#3dplot-holder {
+		zoom: 0.5;
+		float: left;
+			}
+
+#querytext {
+		float: left;
+			}
+#borderedtxt {
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 80%;
+  float: center;
+}
+  #pixelValue {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 1em;
+  font-family: "Arial", sans-serif;
+  font-size: 11px
+  }
+</style>
+
+
+
+<body>
+
+<div id="sidebar" class="leaflet-sidebar collapsed">
+  <!-- Nav tabs -->
+  <div class="leaflet-sidebar-tabs">
+    <!-- top aligned tabs -->
+    <ul role="tablist">
+      <li><a href="#home" role="tab" title="Layers"><i class="fa fa-bars"></i></a></li>
+      <li><a href="#autopan" role="tab" title="Shiptracks"><i class="fa fa-ship"></i></a></li>
+
+     <li><a href="#shapes" role="tab" title="Sub Bottom Profiles"><i class="fa fa-chart-line"></i></a></li>
+      <li><a href="#chartz" role="tab" title="Spatial Querying"><i class="fa fa-chart-pie"></i></a></li>
+    </ul>
+
+     <!-- bottom aligned tabs -->
+     <ul role="tablist">
+                <li><a href="#settings"><i class="fa fa-gear"></i></a></li>
+            </ul>
+  </div>
+
+  <!-- Sidebar tab content -->
+  <div class="leaflet-sidebar-content">
+
+    <div class="leaflet-sidebar-pane" id="home">
+      <h1 class="leaflet-sidebar-header">
+        Layers
+        <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+      </h1>
+<br><br>
+<img src="https://imgur.com/o8czHwF.png" width="100%">
+<img src="https://imgur.com/xAHw4bd.png" width="27%">
+<img src="https://imgur.com/MhhUKFw.png" width="71%"><br><br><br>
+<center>
+<div id="borderedtxt"><p><center>Welcome the the Arctic seabed viewer!<br> Choose a basemap &/or an overlay map to get started.</center></p></div>
+</center>
+<br>
+      <span id="layercontrol"></span>
+    </div>
+
+            <div class="leaflet-sidebar-pane" id="autopan">
+                <h1 class="leaflet-sidebar-header">
+                    Sub Bottom Profiles
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>
+                    I might take the ship linepaths from the main menu and put them in this panel instead.
+                </p>
+                <p>
+                    They will be colour-coded by year & vessel.<br>
+<br>
+Click the button below to demo a 3D profile comparison.
+<br>
+<button class='btn' onclick="spawn3d()"><i class="fa fa-cube"></i></button>
+<br><br>
+Maybe a user could make a selection along a shiptrack to pull up a 3D profile of the sub bottom profile? With 3D surfaces for each interface?<br><br>
+Another potential use for the 3D plot could be to compare bathymetry layers in 3D.<br><br>
+Maybe during future Amundsen voyages, the ship position could be live broadcasted & added as a marker on the map?<br><br>
+I'm also gonna add a section here at the bottom explaining how to read/interpret the linepaths for any laypeople or non-scientists that might visit this website.
+                </p>
+ 
+            </div>
+
+
+
+            <div class="leaflet-sidebar-pane" id="shapes">
+                <h1 class="leaflet-sidebar-header">
+                    Drawing Tool
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>
+                    Click on a shape to draw it on the map.<br>
+Editing & deleting shapes is not currently supported, but I will fix it soon (conflicts w my click listener).
+</p>
+            </div>
+
+            <div class="leaflet-sidebar-pane" id="chartz">
+                <h1 class="leaflet-sidebar-header">
+                    Stats
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+		Click <b><u>TWICE</u></b>on a graph type to display some stats in the popup window.<br>
+<button class='btn' onclick="spawnvenn();"><i class="fa fa-chart-pie"></i></button>
+<button class='btn' onclick="spawnbar()"><i class="fa fa-chart-simple"></i></button>
+<button class='btn' onclick="spawnscatter()"><i class="fa fa-chart-line"></i></button>
+
+            </div>
+
+            <div class="leaflet-sidebar-pane" id="messages">
+                <h1 class="leaflet-sidebar-header"><span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="leaflet-sidebar-pane" id="settings">
+                <h1 class="leaflet-sidebar-header">
+                    Settings
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>
+                    Map settings will go here. You will be able to change colour scale of layers eventually. 
+<br><br>
+<u><b>CREDITS</b></u><br>
+The above webmap would not be possible without the following javascript plugings<br>
+-<a href="https://github.com/Leaflet/Leaflet">leaflet</a><br>
+-<a href="https://github.com/noerw/leaflet-sidebar-v2">sidebar-v2</a><br>
+-<a href="https://github.com/Turfjs/turf">turf.js</a> (for spatial analysis)<br>
+-<a href="https://github.com/Esri/esri-leaflet">esri.js</a> (for ESRI server handling)<br>
+-<a href="https://github.com/Leaflet/Leaflet.draw">leaflet-draw</a> (for drawing tools)<br>
+-<a href="https://github.com/chartjs">chart.js</a> (for graphing)<br>
+-<a href="https://github.com/plotly/plotly.py">plotly</a> (for 3D graphing)<br>
+<br>
+Map data is provided by the following organizations:<br>
+-<a href="https://unb.ca">The University of New Brunswick (UNB)</a><br>
+-<a href="https://data.chs-shc.ca/">The Canadian Hydrographic Service (CHS)</a><br>
+-<a href="https://www.ncei.noaa.gov/maps/bathymetry/">The International Hydrographic Organization (IHO)</a><br>
+-<a href="https://www.gmrt.org/GMRTMapTool/">The Global Multi-Resolution Topographic Synthesis (GMRT)</a><br>
+-<a href="https://www.arcgis.com/home/group.html?id=702026e41f6641fb85da88efe79dc166#overview">The Environmental Systems Research Institute (ESRI)</a><br>
+-<a href="https://www.google.com/maps">Google</a><br>
+-<a href="https://wiki.openstreetmap.org/wiki/WMS">Open Street Maps (OSM)</a>
+
+               </p>
+
+            </div>
+        </div>
+    </div>
+
+<div id="map"></div>
+<div id="pixelValue" class="leaflet-bar"><div id="querytext">Click map for depth in m<br></div><br>
+					<div id="pie-holder"><canvas id="myChart"></canvas></div>
+					<div id="bar-holder"><canvas id="barChart"></canvas></div>
+					<div id="scatter-holder">There could be another type of graph here, who knows?</div>
+					<div id="3dplot-holder" style="display: none" zoom="50%"></div>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+<script>
+	
+var pane = document.getElementById('pixelValue');
+  var renderingRule = {
+  "rasterFunction": "MultidirectionalHillshadeDarkBlues_8000-0", 
+};
+
+
+//Init Overlays
+var overlays = {
+ "CHS NONNA-100": L.tileLayer.wms(
+    "https://data.chs-shc.ca/geoserver/ows?", {
+      layers: "caris:NONNA 100 Tiles",
+      format: "image/png",
+      transparent: true
+    }),
+    'IHO Mosaic': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    }),
+    'IHO Mosaic Recoloured': L.esri.imageMapLayer({
+      url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+      renderingRule: renderingRule,
+    }),
+  "GEBCO - Contours": L.tileLayer(
+    "https://tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_contours/MapServer/tile/{z}/{y}/{x}", {
+  }),
+
+};
+
+//Init BaseMaps
+var basemaps = {
+  "Plain Black": L.tileLayer(
+    "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    {
+      id: "osm.streets"
+    }
+  ),
+  "GEBCO": L.tileLayer.wms(
+    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+    {
+      layers: "GEBCO_Latest"
+    }
+  ),
+  "GEBCO - Gaps": L.tileLayer.wms(
+    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+    {
+      layers: "GEBCO_Latest_3"
+    }
+  ),
+  "GEBCO - Sub-Ice Bathy": L.tileLayer.wms(
+    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+    {
+      layers: "GEBCO_Latest_sub_ice_topo"
+    }
+  ),
+  "Google-Satellite": L.tileLayer(
+    "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+    {
+      id: "google.hybrid"
+    }
+  ),
+  "GMRT Basemap": L.tileLayer.wms(
+    "https://www.gmrt.org/services/mapserver/wms_merc?",
+    {
+	layers: 'topo',
+	format: 'image/png',
+	transparent: true,    }
+  ),
+  "ESRI Ocean Basemap": L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}",
+    {
+      id: "google.satellite"
+    }
+  ),
+};
+
+
+
+//Map Options
+var mapOptions = {
+  zoomControl: false,
+  attributionControl: false,
+  center: [70, -105],
+  zoom: 3.5,
+
+  layers: [basemaps.GEBCO]
+};
+
+
+
+//Render Main Map
+var map = L.map("map", mapOptions);
+
+//Render Zoom Control
+L.control
+  .zoom({
+    position: "bottomright"
+  })
+  .addTo(map);
+
+var sidebar = L.control
+  .sidebar({
+    autopan: false,
+    container: "sidebar",
+    position: "left"
+  })
+  .addTo(map);
+  
+  
+
+//Render Layer Control & Move to Sidebar
+var layerControl = L.control
+  .layers(basemaps, overlays, {
+    position: "topleft",
+    collapsed: false
+  })
+  .addTo(map);
+var oldLayerControl = layerControl.getContainer();
+var newLayerControl = $("#layercontrol");
+newLayerControl.append(oldLayerControl);
+$(".leaflet-control-layers-list").prepend("<strong class='title'>Base Maps</strong><br>");
+$(".leaflet-control-layers-separator").after("<br><strong class='title'>Overlay Maps</strong>");
+
+
+       // add panels dynamically to the sidebar
+        sidebar
+            .addPanel({
+                id:   'gap-analysis',
+                tab:  '<i class="fa fa-arrows-left-right-to-line"></i>',
+                title: 'Gap Analysis',
+                pane: '<p>This is where gap analysis tools will go.<br><br>The below are some random functions to interact with the sidebar if we need them<p/><p><button onclick="sidebar.enablePanel(\'mail\')">enable extra panel</button><button onclick="sidebar.disablePanel(\'mail\')">disable extra panel</button></p><p><button onclick="addUser()">add user panel</button></b><p>Prelim idea for gap analysis is to use geoJSON objects to make polygons highlighting "problem areas" of low coverage. These areas would be calculated from a particular source database (IHO, CHS etc) based on how far point soundings are from one another.</p>',
+            })
+            // add a tab with a click callback, initially disabled
+            .addPanel({
+                id:   'mail',
+                tab:  '<i class="fa fa-arrows"></i>',
+                button: function() { alert('opened via JS callback') },
+                disabled: true,
+            })
+
+        // be notified when a panel is opened
+        sidebar.on('content', function (ev) {
+            switch (ev.id) {
+                case 'autopan':
+                sidebar.options.autopan = true;
+                break;
+                default:
+                sidebar.options.autopan = false;
+            }
+        });
+
+        var userid = 0
+        function addUser() {
+            sidebar.addPanel({
+                id:   'user' + userid++,
+                tab:  '<i class="fa fa-user"></i>',
+                title: 'User Profile ' + userid,
+                pane: '<p>user ipsum dolor sit amet</p>',
+            });
+        }
+
+
+ var renderingRule = {
+    rasterFunction: 'Hillshade',
+    rasterFunctionArguments: {
+      Azimuth: 215,
+      Altitude: 60,
+      ZFactor: 1
+    },
+    variableName: 'DEM'
+  };
+L.esri.get = L.esri.get.JSONP;
+
+  var hillshade = L.esri.imageMapLayer({
+    url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+    renderingRule: renderingRule,
+    useCors: false
+  })
+
+var identifiedPixel;
+map.addEventListener('click', function (e)  {
+    if (identifiedPixel) {
+      pane.innerHTML = 'Loading';
+    }
+    hillshade.identify().at(e.latlng).run(function (error, results) {
+      if (error) {
+        return;
+      }
+
+      identifiedPixel = results.pixel;
+      pane.innerHTML = identifiedPixel.properties.value + 'm';
+    });
+  });
+
+
+
+
+//drawing tool
+// Initialise the FeatureGroup to store editable layers
+var editableLayers = new L.FeatureGroup();
+map.addLayer(editableLayers);
+
+// define custom marker
+var MyCustomMarker = L.Icon.extend({
+  options: {
+    shadowUrl: null,
+    iconAnchor: new L.Point(12, 12),
+    iconSize: new L.Point(24, 24),
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Information_icon4_orange.svg'
+  }
+});
+
+var drawPluginOptions = {
+  position: 'bottomleft',
+  edit: {
+    featureGroup: editableLayers, 
+    edit: true,
+    remove: true,
+  },
+  draw: {
+    polyline: {
+      shapeOptions: {
+        color: '#f357a1',
+        weight: 5
+      }
+    },
+    polygon: {
+      allowIntersection: false, // Restricts shapes to simple polygons
+      drawError: {
+        color: '#e1e100', // Color the shape will turn when intersects
+        message: '<strong>Polygon draw does not allow intersections!<strong> (allowIntersection: false)' // Message that will show when intersect
+      },
+      shapeOptions: {
+        color: 'green'
+      }
+    },
+    circle: false, // Turns off this drawing tool
+    rectangle: {
+      shapeOptions: {
+        clickable: false
+      }
+    },
+    marker: {
+      icon: new MyCustomMarker()
+    }
+  },
+};
+
+// Initialise the draw control and pass it the FeatureGroup of editable layers
+var drawControl = new L.Control.Draw(drawPluginOptions);
+
+map.addControl(drawControl);
+var editableLayers = new L.FeatureGroup();
+map.addLayer(editableLayers);
+
+map.on(L.Draw.Event.CREATED, function (e) {
+  var type = e.layerType
+  var layer = e.layer;
+
+  // Do whatever else you need to. (save to db, add to map etc)
+  editableLayers.addLayer(layer);
+});
+
+function spawnvenn(){
+  var x = document.getElementById("pie-holder");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
+function spawnbar(){
+  var x = document.getElementById("bar-holder");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+function spawnscatter(){
+  var x = document.getElementById("scatter-holder");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+function spawn3d(){
+  var x = document.getElementById("3dplot-holder");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
+
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Overlap < 5% diff','Overlap > 5% diff'],
+        datasets: [{
+            label: 'Percent difference',
+            data: [98, 2],
+            backgroundColor: [
+                'rgba(75, 192, 63, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
+           ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+ 
+
+//initialize histogram
+let chartConfig = {
+    type: 'bar',
+    data: {
+        labels: ['<100m','100-500m','500m-1km','1km-2km','2km-5km','>5km'],
+        datasets: [{
+	    label: 'Pings within range',
+            data: [55.39, 69.55, 71.30, 82.91, 73.43, 68.32],
+            backgroundColor: [
+                'rgba(204, 224, 255, 0.6)',
+                'rgba(164, 194, 242, 0.6)',
+                'rgba(95, 138, 207, 0.6)',
+                'rgba(21, 78, 171, 0.6)',
+                'rgba(8, 55, 130, 0.6)',
+                'rgba(0, 21, 51, 0.6)',
+           ],
+            borderColor: [
+                'rgba(204, 224, 255, 1)',
+                'rgba(164, 194, 242, 1)',
+                'rgba(95, 138, 207, 1)',
+                'rgba(21, 78, 171, 1)',
+                'rgba(8, 55, 130, 1)',
+                'rgba(0, 21, 51, 1)',
+           ],
+            borderWidth: 1,
+	    barPercentage: 1.0,
+	    categoryPercentage: 1.0,
+        }]
+    },
+    options: {
+	plugins: {
+		legend: false,
+		title: {
+			display: true,
+			text: 'Titley title'
+			},
+},
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+};
+var vtx = document.getElementById('barChart').getContext('2d');
+var barChart = new Chart(vtx, chartConfig); 
+
+function onEachFeature(feature, layer) {
+	var popupContent = '<p>I am ' +
+	freeBus.name + ', and I am' + length + 'km... yay!</p>';
+	layer.bindPopup(popupContent);
+}
+var mystyle = {
+	"color": "#ff7800",
+	"weight": 5,
+	"opacity": 0.65
+};
+
+//3d plot
+z1 = [
+
+    [8.83,8.89,8.81,8.87,8.9,8.87],
+
+    [8.89,8.94,8.85,8.94,8.96,8.92],
+
+    [8.84,8.9,8.82,8.92,8.93,8.91],
+
+    [8.79,8.85,8.79,8.9,8.94,8.92],
+
+    [8.79,8.88,8.81,8.9,8.95,8.92],
+
+    [8.8,8.82,8.78,8.91,8.94,8.92],
+
+    [8.75,8.78,8.77,8.91,8.95,8.92],
+
+    [8.8,8.8,8.77,8.91,8.95,8.94],
+
+    [8.74,8.81,8.76,8.93,8.98,8.99],
+
+    [8.89,8.99,8.92,9.1,9.13,9.11],
+
+    [8.97,8.97,8.91,9.09,9.11,9.11],
+
+    [9.04,9.08,9.05,9.25,9.28,9.27],
+
+    [9,9.01,9,9.2,9.23,9.2],
+
+    [8.99,8.99,8.98,9.18,9.2,9.19],
+
+    [8.93,8.97,8.97,9.18,9.2,9.18]
+];
+
+
+z2 = [];
+for (var i=0;i<z1.length;i++ ) { 
+  z2_row = [];
+    for(var j=0;j<z1[i].length;j++) { 
+      z2_row.push(z1[i][j]+1);
+    }
+    z2.push(z2_row);
+}
+
+z3 = []
+for (var i=0;i<z1.length;i++ ) { 
+  z3_row = [];
+    for(var j=0;j<z1[i].length;j++) { 
+      z3_row.push(z1[i][j]-1);
+    }
+    z3.push(z3_row);
+}
+
+var data_z1 = {z: z1, type: 'surface'};
+var data_z2 = {z: z2, showscale: false, opacity:0.9, type: 'surface'};
+var data_z3 = {z: z3, showscale: false, opacity:0.9, type: 'surface'};
+
+Plotly.newPlot('3dplot-holder', [data_z1, data_z2, data_z3]);
+
+</script>
