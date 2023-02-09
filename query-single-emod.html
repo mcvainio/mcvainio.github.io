@@ -2,9 +2,15 @@
 <html>
 <head>
 <title>WMS GetFeatureInfo</title>
+<!-- Leaflet w plugins -->
+<link rel="stylesheet" href="/css/leaflet.css" />
+<script src="/js/leaflet.js"></script>
+<script src="/js/esri-leaflet.js"></script>
+<script src="/js/jquery.js"></script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <script src="/js/jquery.js"></script>
+    
 
 <style>
     body { margin: 0; overflow: hidden; }
@@ -25,23 +31,16 @@
 <div id="map"></div>
 <div id="pixelValue" class="leaflet-bar">Click map for depth in m</div>
 
-<link rel="stylesheet" href="/css/leaflet.css" />
-<script src="/js/leaflet.js"></script>
-<script src="/js/esri-leaflet.js"></script>
-
-    
-
 <script>
-      var map = L.map('map', {
-        center: [60,10],
-        zoom: 5
+var map = L.map('map', {
+	center: [60,10],
+	zoom: 5
       });
       
 L.esri.basemapLayer("Gray").addTo(map);
 var url = '//ows.emodnet-bathymetry.eu/ows?';
 var pane = document.getElementById('pixelValue');
 var emod;
-
 
 layer1 = L.tileLayer.wms(url, {
         layers: 'emodnet:mean_2016',
