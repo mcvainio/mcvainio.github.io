@@ -67,6 +67,7 @@ var overlays = {
   }),
     'IHO Mosaic': L.esri.imageMapLayer({
       url: 'https://gis.ngdc.noaa.gov/arcgis/rest/services/multibeam_mosaic/ImageServer',
+      useCors: false
     }),
  "CHS NONNA-100": L.tileLayer.wms(
     "https://data.chs-shc.ca/geoserver/ows?", {
@@ -74,8 +75,11 @@ var overlays = {
       format: "image/png",
       transparent: true
     }),
-  "UNB Arctic BaseMaps Data": L.tileLayer(
+  "UNB Arctic Bathy Data": L.tileLayer(
     "http://www.omg.unb.ca/~jmuggah/Bathy/{x}_{y}_{z}", {
+  }),
+   "UNB Arctic Backscatter Data": L.tileLayer(
+    "http://www.omg.unb.ca/~jmuggah/Backscatter/{x}_{y}_{z}", {
   }),
 };
 
