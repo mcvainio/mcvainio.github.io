@@ -70,15 +70,15 @@ while(scene.children.length > 0){
     scene.remove(scene.children[0]); 
 }
 controls.reset();
-wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&FORMAT=XYZ&COVERAGE=land_utm33_50m&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=200&HEIGHT=200';
+wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&FORMAT=XYZ&COVERAGE=land_utm33_50m&CRS=EPSG:32632&BBOX=' + bbox + '&WIDTH=100&HEIGHT=100';
 
     var terrainLoader = new THREE.WcsTerrainLoader();
     terrainLoader.load(wcsUrl, function(data) {
 
-        var geometry = new THREE.PlaneGeometry(60, 60, 199, 199);
+        var geometry = new THREE.PlaneGeometry(60, 60, 99, 99);
 //loop through each vertex of the plane, modifying its z value (elevation) based on our WCS output
         for (var i = 0, l = geometry.vertices.length; i < l; i++) {
-            geometry.vertices[i].z = data[i] / 300;
+            geometry.vertices[i].z = - data[i] / 300;
         }
 
         var material = new THREE.MeshPhongMaterial({
@@ -90,7 +90,7 @@ wcsUrl = '//openwms.statkart.no/skwms1/wcs.dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST
         var plane = new THREE.Mesh(geometry, material);
         scene.add(new THREE.AxisHelper(100));
         scene.add(plane);
-	plane.rotateZ(THREE.Math.degToRad(180))
+	plane.rotateX(THREE.Math.degToRad(180))
     });
 }
 
