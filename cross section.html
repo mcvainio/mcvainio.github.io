@@ -107,10 +107,11 @@ topo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
 //add the object to our scene
         var plane = new THREE.Mesh(topo, material);
         scene.add(plane);
-		
+	plane.material.side = THREE.DoubleSide;
+
 //plane.rotateX(90*(Math.PI)/180);
 //plane.rotateY(180*(Math.PI)/180);
-
+//plane.rotateZ(270*(Math.PI)/180);
 
 //the rest is necessary for 3js to function
     var controls = new THREE.TrackballControls(camera); 
