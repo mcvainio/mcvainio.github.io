@@ -42,9 +42,9 @@ var convert1;
 //defining some things for later
 var data = stripmap.coords;
 var numxpts = (data.length)/4;
-var centery = data[0.5*(numxpts)-1];
-var centerx = data[0.5*(numxpts)-2];
-var centerz = data[0.5*(numxpts)];
+var centery = data[2*(numxpts)-1];
+var centerx = data[2*(numxpts)-2];
+var centerz = data[2*(numxpts)];
 var segments = Math.sqrt(numxpts);
 //multiplying number of segments by 4 because we are making each point into a square pixel
 var plotsegments = (segments-1)*4-20;
