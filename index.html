@@ -47,7 +47,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 	
 <div class="fancy">
 <a name="basicmap"></a>
-<a href="1LeafletBasics.html" target="_blank">
+<a href="/examples/1-LeafletBasics.html" target="_blank">
 <img src="https://i.imgur.com/rixZW6F.jpg" class="superImage" />
 <br/>Leaflet Basics</a>
 <p class ="superText"> Leaflet 101 example taken from their quickstart guide. Shows how to display a marker, a shape and a polygon.
@@ -56,7 +56,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 	
 <div class="fancy">
 <a name="displaywms"></a>
-<a href="displaywmsurl.html" target="_blank">
+<a href="/examples/2-DisplayWMSURL.html" target="_blank">
 <img src="https://i.imgur.com/ueHX4a0.jpg" class="superImage" />
 <br/>Display WMS</a>
 <p class ="superText"> A Leaflet map with an inline HTML form that triggers an event handler to pass the user-inputted WMS URL into a variable. This variable is then called upon and displayed on the map.
@@ -65,7 +65,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 	
 <div class="fancy">
 <a name="singleemod"></a>
-<a href="query-single-emod.html" target="_blank">
+<a href="/examples/3-QueryWMS.html" target="_blank">
 <img src="https://i.imgur.com/iaUPvt2.jpg" class="superImage" />
 <br/>Query WMS (generic server)</a>
 <p class ="superText"> WMS used: EMOD bathymetry. <br> Same as above, but queries a general open geoserver rather than an ESRI-specific one. The previous example employed a plug-in designed specifically for handling ESRI requests. The current example employs jQuery instead to manually create an XMLHttpRequest.</p>
@@ -73,7 +73,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="singleiho"></a>
-<a href="query-iho.html" target="_blank">
+<a href="/examples/4-QueryWMS-esri.html" target="_blank">
 <img src="https://i.imgur.com/JW3DApc.png" class="superImage" />
 <br/>Query WMS (ESRI server)</a>
 <p class ="superText"> WMS used: Bathymetry data from the IHO. <br> Uses a click listener on a Leaflet map to grab a user-selected co-ordinate. Then, fires a single GetFeatureInfo query at the IHO's ESRI geoserver using that co-ord. The result (the depth property of the WMS) is displayed in an inline window on the map.</p>
@@ -81,7 +81,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="spatialquery"></a>
-<a href="query-iho-histogram.html" target="_blank">
+<a href="/examples/5-QueryArea.html" target="_blank">
 <img src="https://i.imgur.com/1xUgzZG.jpg" class="superImage" />
 <br/>Query Spatial Selection</a>
 <p class ="superText"> Uses a rectangle on the map as the areal selection bounds (bbox) for performing multiple queries. The output results of those queries are stored in a JS array & assigned a variable. That array variable is then used as input to generate a histogram, which is displayed in a div to the side of the map using the Chart.JS plug-in. </p>
@@ -89,7 +89,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="spatialquery2"></a>
-<a href="query-iho-histogram.html" target="_blank">
+<a href="/examples/Query2WMSLayers" target="_blank">
 <img src="https://i.imgur.com/1xUgzZG.jpg" class="superImage" />
 <br/>Spatial Query - 2 Layers</a>
 <p class ="superText">Under Construction.<br> Uses the same method as the above example, but captures results from 2 bathymetric WMS layers (the IHO one and the EMOD one). The Chart.JS plug-in is used to generate a venn diagram showing how much of the data falls under an "acceptable" percent difference (<5%). </p>
@@ -97,7 +97,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 	
 <div class="fancy">
 <a name="spatialquery3"></a>
-<a href="qaqc-window.html" target="_blank">
+<a href="/examples/ArealStatsQAQCWindow.html" target="_blank">
 <img src="https://i.imgur.com/OubuNMA.jpg" class="superImage" />
 <br/>Spatial Query Extended - Statistical Analysis</a>
 <p class ="superText"> Under Construction.<br>Performs an areal query using the methods outlined above. The results are displayed not only as a histogram, as various other statistical qualities & graphs related to the data found within the shape. Two different data layers from the map are compared, generating a QA/QC diagnostic window. </p>
@@ -117,7 +117,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="3dplane"></a>
-<a href="3d plane.html" target="_blank">
+<a href="/examples/9-Plane.html" target="_blank">
 <img src="https://i.imgur.com/bJivF2L.png" class="superImage" />
 <br/>Plain Plane</a>
 <p class ="superText"> Shows how to generate a wireframe mesh of a plane. Our subsequent examples will use this plane as a base, modifying it to model real-world terrain. </p>
@@ -126,7 +126,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="wcsplane"></a>
-<a href="3d wireframe from wcs.html" target="_blank">
+<a href="/examples/TopoMeshfromWCS.html" target="_blank">
 <img src="https://i.imgur.com/Xe4Nqyx.jpg" class="superImage" />
 <br/>Modify Surface Elevations Using WCS</a>
 <p class ="superText"> Generates a plane like the above example, but then loops through each vertex. For every point on the plane, the z value (the elevation) is changed into the corresponding value taken from a WCS. </p>
@@ -134,23 +134,15 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="wmsplane"></a>
-<a href="3d topo w wms overlay.html" target="_blank">
+<a href="/examples/TopoWithWMSOverlay.html" target="_blank">
 <img src="https://i.imgur.com/mXRkymN.jpg" class="superImage" />
 <br/>Map WMS Texture onto Surface</a>
 <p class ="superText"> Takes the wireframe from the above example & overlays an image texture. This texture is taken from a WMS that is clipped to the same geographic bounds as the plane & WCS data. Allow ~5s to load.</p>
 </div>
-	
-<div class="fancy">
-<a name="wmsextended"></a>
-<a href="3d topo w wms overlay.html" target="_blank">
-<img src="https://i.imgur.com/mXRkymN.jpg" class="superImage" />
-<br/>WMS Overlay Extended</a>
-<p class ="superText">Under Construction.<br> Extends the previous example to include a toggle checkbox to switch the WMS overlay on/off. Also adds a dropdown menu for the user to select from multiple WMS overlay options. Adds a click listener to the 3D scene that will display the value of the WMS at the selected coordinate.</p>
-</div>
 
 <div class="fancy">
 <a name="vertplane"></a>
-<a href="Translucence.html" target="_blank">
+<a href="/examples/Translucence.html" target="_blank">
 <img src="html-images/Translucence.png" class="superImage" />
 <br/>Modify Surface Colours Using ASCII JS Array</a>
 <p class ="superText">Under Construction.<br> Rather than overlaying an image, we now try colouring our planar surface using a text array. In particular, we are using an ASCII file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section. </p>
@@ -166,7 +158,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 	
 <div class="fancy">
 <a name="2dto3d"></a>
-<a href="3dselectorv1.html" target="_blank">
+<a href="/examples/3DSceneFrom2D.html" target="_blank">
 <img src="https://i.imgur.com/eLfFscd.jpg" class="superImage" />
 <br/>Generate 3D Scene from 2D Map Selection</a>
 <p class ="superText"> Starts with a 3D seabed model like the above example. This time though, there is a 2D Leaflet map alongside it. A shape drawn on the overhead map lets the user change where the 3D model is generated from (ie. changes the bbox co-ords for the WCS coverage request). </p>
