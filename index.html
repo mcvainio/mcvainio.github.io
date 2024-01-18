@@ -91,7 +91,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="/examples/Query2WMSLayers" target="_blank">
 <img src="https://i.imgur.com/1xUgzZG.jpg" class="superImage" />
 <br/>Spatial Query - 2 Layers</a>
-<p class ="superText">Under Construction.<br> Uses the same method as the above example, but captures results from 2 bathymetric WMS layers (the IHO one and the EMOD one). The Chart.JS plug-in is used to generate a venn diagram showing how much of the data falls under an "acceptable" percent difference (<5%). </p>
+<p class ="superText">Uses the same method as the above example, but captures results from 2 bathymetric WMS layers (the IHO one and the EMOD one). The results from each areal query are used in a simple mathematical equation to start off (the mean difference between depth values). </p>
 </div>
 	
 <div class="fancy">
@@ -99,7 +99,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="/examples/ArealStatsQAQCWindow.html" target="_blank">
 <img src="https://i.imgur.com/OubuNMA.jpg" class="superImage" />
 <br/>Spatial Query Extended - Statistical Analysis</a>
-<p class ="superText"> Under Construction.<br>Performs an areal query using the methods outlined above. The results are displayed not only as a histogram, as various other statistical qualities & graphs related to the data found within the shape. Two different data layers from the map are compared, generating a QA/QC diagnostic window. </p>
+<p class ="superText">Expands on the above concept of using the results of ou queries in statistical calculations. The results are now displayed as a histogram, among various other statistical qualities & graphs related to the data found within the shape. Two different data layers from the map are compared, generating a QA/QC diagnostic window. </p>
 </div>
 
 <div class="fancy">
@@ -125,7 +125,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="wcsplane"></a>
-<a href="/examples/TopoMeshfromWCS.html" target="_blank">
+<a href="/examples/10-TopoMeshfromWCS.html" target="_blank">
 <img src="https://i.imgur.com/Xe4Nqyx.jpg" class="superImage" />
 <br/>Modify Surface Elevations Using WCS</a>
 <p class ="superText"> Generates a plane like the above example, but then loops through each vertex. For every point on the plane, the z value (the elevation) is changed into the corresponding value taken from a WCS. </p>
@@ -133,7 +133,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 
 <div class="fancy">
 <a name="wmsplane"></a>
-<a href="/examples/TopoWithWMSOverlay.html" target="_blank">
+<a href="/examples/11-TopoWithWMSOverlay.html" target="_blank">
 <img src="https://i.imgur.com/mXRkymN.jpg" class="superImage" />
 <br/>Map WMS Texture onto Surface</a>
 <p class ="superText"> Takes the wireframe from the above example & overlays an image texture. This texture is taken from a WMS that is clipped to the same geographic bounds as the plane & WCS data. Allow ~5s to load.</p>
@@ -143,8 +143,8 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a name="vertplane"></a>
 <a href="/examples/Translucence.html" target="_blank">
 <img src="html-images/Translucence.png" class="superImage" />
-<br/>Modify Surface Colours Using ASCII JS Array</a>
-<p class ="superText">Under Construction.<br> Rather than overlaying an image, we now try colouring our planar surface using a text array. In particular, we are using an ASCII file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section. </p>
+<br/>Generate Point Cloud from CSV</a>
+<p class ="superText">Rather than overlaying an image, we now try colouring a point cloud using a CSV file In particular, we are using a file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section. </p>
 </div>
 
 <div class="fancy">
@@ -152,7 +152,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="Shadow.html" target="_blank">
 <img src="html-images/Shadow.png" class="superImage" />
 <br/>3D Seabed (Topo and Subsurface)</a>
-<p class ="superText">Under Construction.<br> Combining the WCS topo with WMS overlay, alongside the cross-sectional vertical curtain data that was generated from the ASCII example above. </p>
+<p class ="superText">We now combine the WCS topography/WMS overlay with the cross-sectional vertical curtain that was generated from the point cloud example above. </p>
 </div>
 	
 <div class="fancy">
@@ -160,7 +160,7 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="/examples/3DSceneFrom2D.html" target="_blank">
 <img src="https://i.imgur.com/eLfFscd.jpg" class="superImage" />
 <br/>Generate 3D Scene from 2D Map Selection</a>
-<p class ="superText"> Starts with a 3D seabed model like the above example. This time though, there is a 2D Leaflet map alongside it. A shape drawn on the overhead map lets the user change where the 3D model is generated from (ie. changes the bbox co-ords for the WCS coverage request). </p>
+<p class ="superText"> Starts with a 3D topographic mesh model like the examples above. This time though, there is a 2D Leaflet map alongside it. A shape drawn on the overhead 2D map lets the user change where the 3D model is generated from (ie. changes the bbox co-ords for the WCS coverage request). </p>
 </div>
 
 
