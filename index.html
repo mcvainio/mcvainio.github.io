@@ -14,7 +14,7 @@
 <br>
 &nbsp;The goal of this collection is to provide a set of instructive examples which introduce a variety of open source plug-ins that come in handy when displaying geospatial data within the browser. Not all of these plug-ins were created specifically for web mapping, but we will be adapting them to suit our needs.
 <br><br>
-These examples were developed in the process of creating the <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">ArcticNet Seabed Explorer</a> - a web portal maintained by the Ocean Mapping Group at UNB for the purpose of hosting the seabed & subsurface data collected by the CCGS Amundsen in the Canadian Arctic.
+These examples were developed for the purpose of updating the ArcticNet Basemaps Series - a web portal maintained by the Ocean Mapping Group at UNB for the purpose of hosting the seabed & subsurface data collected by the CCGS Amundsen in the Canadian Arctic.
 <br><br>
 Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">GitHub</a>. 
 <br><br>
@@ -144,7 +144,8 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="/examples/Translucence.html" target="_blank">
 <img src="https://imgur.com/0By2WeC.jpg" class="superImage" />
 <br/>Generate Point Cloud from CSV</a>
-<p class ="superText">Rather than overlaying an image, we now try colouring a point cloud using a CSV file In particular, we are using a file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section. </p>
+<p class ="superText">Rather than overlaying an image, we now try colouring a point cloud using a CSV file In particular, we are using a file that corresponds to a sub-bottom dataset. The column that we've used to colour the pixels represents the intensity of the return at that depth. Essentially, this generates a cross-section.<br>
+Note that the input sub bottom file is too large to host on github (for free at least lol). As such, this example is given in html/js format. To display it properly, you will need to use your own CSV file, altering the name of "output.csv" appropriately. If you would like a sample input CSV file for testing, please DM me on github. </p>
 </div>
 
 <div class="fancy">
@@ -152,7 +153,8 @@ Hosted at <a class="toc" href="https://github.com/mcvainio/mcvainio.github.com">
 <a href="Shadow.html" target="_blank">
 <img src="https://imgur.com/IOTkE57.jpg" class="superImage" />
 <br/>3D Seabed (Topo and Subsurface)</a>
-<p class ="superText">We now combine the WCS topography/WMS overlay with the cross-sectional vertical curtain that was generated from the point cloud example above. </p>
+<p class ="superText">We now combine the WCS topography/WMS overlay with the cross-sectional vertical curtain that was generated from the point cloud example above. <br>
+As with the previous example, the sub bottom data is too large to host on github and so only the raw html/js file is supplied. If you would like a sample input CSV for testing, please DM me on github. </p>
 </div>
 	
 <div class="fancy">
