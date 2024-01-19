@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Point Cloud Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.131.3/build/three.module.js",
+                "three/examples/jsm/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.131.3/examples/jsm/controls/OrbitControls.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+        //import { scaleSequential, interpolateViridis } from 'https://d3js.org/d3-scale.v3.min.js';
+
+        function plotPoints(data) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            
+            const xScale = 1; // Adjust these values as needed
+            const yScale = 1;
+            const zScale = 1;
+
+            // Create a color scale
+            var colorScale = d3.scaleSequential()
+                .domain([d3.min(data, d => d.intensity), d3.max(data, d => d.intensity)])
+                .interpolator(d3.interpolateTurbo);
+
+            data.forEach(row => {
+                let color = new THREE.Color(colorScale(row.intensity));
+                colors.push(color.r, color.g, color.b);
+            });
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            data.forEach(row => {
+                if (!isNaN(row.utm_easting_norm) && !isNaN(row.utm_northing_norm) && !isNaN(row.depth_norm)) {
+                    //positions.push(row.utm_easting_norm * xScale, row.utm_northing_norm * yScale, row.depth_norm * zScale * -1);
+                    positions.push(row.utm_easting_norm * xScale, row.depth_norm * zScale * -1, row.utm_northing_norm * yScale);
+                }
+            });
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            
+            //const material = new THREE.PointsMaterial({size: 1});
+            
+
+            let minX = Infinity, minY = Infinity, minZ = Infinity;
+            let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+
+            data.forEach(row => {
+                if (!isNaN(row.utm_easting_norm) && !isNaN(row.utm_northing_norm) && !isNaN(row.depth_norm)) {
+                    minX = Math.min(minX, row.utm_easting_norm);
+                    minY = Math.min(minY, row.utm_northing_norm);
+                    minZ = Math.min(minZ, row.depth_norm);
+
+                    maxX = Math.max(maxX, row.utm_easting_norm);
+                    maxY = Math.max(maxY, row.utm_northing_norm);
+                    maxZ = Math.max(maxZ, row.depth_norm);
+                }
+            });
+
+            function getColor(intensity) {
+                let normalizedIntensity = intensity / 255;  // Normalize the intensity to the range 0-1
+                let color = new THREE.Color();
+                color.setHSL(0.3 * (1 - normalizedIntensity), 1, 0.5);
+                return color;
+            }
+
+            // const colors = [];
+            // data.forEach(row => {
+            //     let color = getColor(row.intensity);
+            //     colors.push(color.r, color.g, color.b);
+            // });
+            // geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({size: 100, vertexColors: THREE.VertexColors});
+
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            //let centerX = (minX + maxX) / 2;
+            let centerX = 2000;
+            let centerY = 2000;
+            //let centerY = (minY + maxY) / 2;
+            let centerZ = (minZ + maxZ) / 2;
+
+            // Create a Box3 and set it to the bounding box of your data
+            var boundingBox = new THREE.Box3().setFromObject(points);
+            var boxHelper = new THREE.BoxHelper(points, 0xffff00);
+            scene.add(boxHelper);
+
+
+            // Get the center of the bounding box
+            //var center = boundingBox.getCenter(new THREE.Vector3());
+
+            // Get the size of the bounding box
+            var size = boundingBox.getSize(new THREE.Vector3());
+
+            // Get the max dimension of the bounding box (for the camera to zoom out to)
+            var maxDim = Math.max(size.x, size.y, size.z);
+
+            // Define cameraDistance
+            var cameraDistance = 1000; // Adjust the multiplier as needed
+
+            //var fov = 2 * Math.atan(maxDim / (2 * cameraDistance)) * (180 / Math.PI);
+            var fov = 10;
+
+            // Set the camera position and look at
+            camera.fov = fov;
+                
+            // Calculate the sum of each dimension across all data points
+            var sum = data.reduce((sum, row) => {
+                return {
+                    utm_easting: sum.utm_easting + row.utm_easting,
+                    utm_northing: sum.utm_northing + row.utm_northing,
+                    depth: sum.depth + row.depth
+                };
+            }, {utm_easting: 0, utm_northing: 0, depth: 0});
+            // Calculate the center of the dataset
+            var center = {
+                utm_easting: sum.utm_easting / data.length,
+                utm_northing: sum.utm_northing / data.length,
+                depth: sum.depth / data.length
+            };
+
+            // Move the camera away from the center
+            //camera.position.set(center.utm_easting, center.utm_northing, center.depth - 1000);
+            camera.position.set(-21000, 0, 25000);
+            camera.lookAt(new THREE.Vector3(center.utm_easting, center.utm_northing, center.depth));
+            //camera.lookAt(center);
+            camera.updateProjectionMatrix();
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
+
+
+            // Add an event listener for the 'change' event
+            // controls.addEventListener('change', function() {
+            //     console.log("Camera position:", camera.position);
+                
+            // });
+
+            console.log("First point position:", positions[0], positions[1], positions[2]);
+            console.log("Second point position:", positions[3], positions[4], positions[5]);
+            console.log("Third point position:", positions[6], positions[7], positions[8]);
+            console.log("Camera position:", camera.position);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        fetch('output.csv')
+            .then(response => response.text())
+            .then(csvString => Papa.parse(csvString, { header: true }))
+            .then(result => plotPoints(result.data));
+    </script>
+</body>
+</html>
