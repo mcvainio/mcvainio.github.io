@@ -4,25 +4,20 @@
     <title>Seafloor and Subsurface Visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.138.3/three.min.js"></script>
+<script src="../lib/TrackballControls.js"></script> 
+<script src="../lib/WcsTerrainLoader.js"></script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
     </style>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.131.3/build/three.module.js",
-                "three/examples/jsm/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.131.3/examples/jsm/controls/OrbitControls.js"
-            }
-        }
-    </script>
+
 </head>
 <body>
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-        //import { scaleSequential, interpolateViridis } from 'https://d3js.org/d3-scale.v3.min.js';
+    <script>
+ var bbox   = '-77.78232,55.33637,-77.76372,55.34638';
+var wcsUrl = 'http://localhost:8080/geoserver/unb/wcs?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=topotest&FORMAT=text/plain&CRS=EPSG:4326&BBOX=' + bbox + '&WIDTH=100&HEIGHT=100';
 
         function plotPoints(data) {
             const scene = new THREE.Scene();
@@ -53,7 +48,7 @@
             data.forEach(row => {
                 if (!isNaN(row.utm_easting_norm) && !isNaN(row.utm_northing_norm) && !isNaN(row.depth_norm)) {
                     //positions.push(row.utm_easting_norm * xScale, row.utm_northing_norm * yScale, row.depth_norm * zScale * -1);
-                    positions.push(row.utm_easting_norm * xScale, row.depth_norm * zScale * -1, row.utm_northing_norm * yScale);
+                    positions.push(row.utm_easting_norm * xScale, row.depth_norm * zScale * -1 +1000, row.utm_northing_norm * yScale);
                 }
             });
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -82,6 +77,13 @@
                 color.setHSL(0.3 * (1 - normalizedIntensity), 1, 0.5);
                 return color;
             }
+
+            // const colors = [];
+            // data.forEach(row => {
+            //     let color = getColor(row.intensity);
+            //     colors.push(color.r, color.g, color.b);
+            // });
+            // geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
             const material = new THREE.PointsMaterial({size: 100, vertexColors: THREE.VertexColors});
 
@@ -130,17 +132,17 @@
             var center = {
                 utm_easting: sum.utm_easting / data.length,
                 utm_northing: sum.utm_northing / data.length,
-                depth: sum.depth / data.length 
+                depth: sum.depth / data.length
             };
 
             // Move the camera away from the center
-            //camera.position.set(new THREE.Vector3(center.utm_easting, center.utm_northing, center.depth));
-            camera.position.set(-51000, -10000, -10000);
+            //camera.position.set(center.utm_easting, center.utm_northing, center.depth - 1000);
+            camera.position.set(-21000, 0, 25000);
             camera.lookAt(new THREE.Vector3(center.utm_easting, center.utm_northing, center.depth));
             //camera.lookAt(center);
             camera.updateProjectionMatrix();
 
-            const controls = new OrbitControls(camera, renderer.domElement);
+            const controls = new THREE.TrackballControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.25;
             controls.enableZoom = true;
@@ -155,7 +157,6 @@
             console.log("First point position:", positions[0], positions[1], positions[2]);
             console.log("Second point position:", positions[3], positions[4], positions[5]);
             console.log("Third point position:", positions[6], positions[7], positions[8]);
-			console.log("Center:", center);
             console.log("Camera position:", camera.position);
 
             function animate() {
@@ -166,19 +167,63 @@
             animate();
 			
 			
-const geometry1 = new THREE.PlaneGeometry( 4096, 4096, 199, 199 );
-//so it's going from xy -2500 to xy 2500
-//200x200 is the size of the img resolution, but the size within the scene is 5k units x 5k units
-//so how much is a unit? depends on the size we set it to to make our cross section point cloud
-const material1 = new THREE.MeshBasicMaterial( {color: 0xffcc00, side: THREE.DoubleSide} );
-const plane = new THREE.Mesh( geometry1, material1 );
-scene.add( plane );
-plane.rotation.x = Math.PI / 2;
-plane.position.set(4096/2, 0, 4096/2);
-//plane.position.set(-47000, 0, 38000);
-var boxHelper = new THREE.BoxHelper(plane, 0xffff00);
-            console.log("Plane Corner:", geometry1.attributes.position);
+        var topogeometry = new THREE.PlaneGeometry(4096, 4096, 99, 99);
+		var oldpos = (topogeometry.attributes.position.array);
+//		const pos = [];
+//		pos.push(oldpos);			
+    var terrainLoader = new THREE.WcsTerrainLoader();
+    terrainLoader.load(wcsUrl, function(data) {
+        for (var i = 0, l = ((topogeometry.attributes.position.count)); i < l; i++) {
+		var zz = data[i];
+		var xx = (-2048+i*2);
+		var yy = (-2048+i*2);
+			if (data[i] < -1990) {
+			oldpos[i*3+2]=Number("NaN");
+//			pos[i+1]=Number("NaN");
+//			pos[i+2]=Number("NaN");
+			}
+			if (data[i] > -1990) {
+			oldpos[i*3+2]= (zz*30);
+//				console.log(pos);
+//topogeometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+			}
         }
+        var topomaterial = new THREE.MeshBasicMaterial({
+//		envMap: THREE.ImageUtils.loadTexture('https://i.imgur.com/V6JCIpr.jpg'),
+			color: 0x00ffff,
+			wireframe: true,
+//			flatShading: true
+        });
+//		topogeometry.computeFaceNormals();
+console.log(topomaterial);
+        var plane = new THREE.Mesh(topogeometry, topomaterial);
+        scene.add(plane);
+plane.rotation.x = Math.PI*3/2;
+plane.rotation.z = Math.PI*3/2;
+plane.position.set(2048,2000,2048);
+//var box = new THREE.BoxHelper(plane, 0xffff00);
+//console.log(topogeometry);
+    render();
+
+    function render() {
+        controls.update();    
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+    }
+    });
+	
+//North arrow
+const dir = new THREE.Vector3(1,0,0);
+const origin = new THREE.Vector3(0,0,-1);
+const length = 1000;
+const hex = 0xffff00;
+const NArrow = new THREE.ArrowHelper(dir,origin,length,hex);
+scene.add(NArrow);
+//arrow sits at origin pointing towards x axis
+//move it up a little bit on the z axis & shift it horizontally by 200 units (ie. changing arrow placement, but not North heading)
+NArrow.position.set(0,50,-200);
+        }
+
 
         fetch('output.csv')
             .then(response => response.text())
